@@ -1,6 +1,9 @@
 #btn-switch {
+
+    width: fit-content;
+    margin: auto;
+
     color: #108be3;
-    text-align: center;
 
     cursor: pointer;
 

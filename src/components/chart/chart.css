@@ -1,0 +1,19 @@
+.crt_wrapper {
+    float: left;
+    box-sizing: border-box;
+    width: calc(100%);
+    margin: 0;
+    padding: 50px;
+}
+
+@media (min-width: 768px) {
+    .crt_wrapper {
+        width: calc(100% / 2);
+    }
+}
+
+@media (min-width: 1200px) {
+    .crt_wrapper {
+        width: calc(100% / 3);
+    }
+}

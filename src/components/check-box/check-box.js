@@ -1,7 +1,7 @@
 import './check-box.css';
 import { createElement } from '../../helpers/elements';
 import { addListener } from '../../helpers/event-listeners';
-import checkIcon from '../icons/checkbox-icon';
+import createCheckIcon from '../icons/checkbox-icon';
 
 const uncheckedMark = 'cb_unchecked-mark';
 const checkedMark = 'cb_checked-mark';
@@ -15,7 +15,7 @@ export default (color, text, onChange) => {
     label.textContent = text;
 
     wrapper.appendChild(mark);
-    mark.appendChild(checkIcon);
+    mark.appendChild(createCheckIcon());
     wrapper.appendChild(label);
 
     addListener(wrapper, 'click', () => {
