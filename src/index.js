@@ -1,6 +1,8 @@
 import './global.css';
-import initSwitchButton from './components/switch-button/switch-button';
+import createSwitchButton from './components/switch-button/switch-button';
 import createCheckBox from './components/check-box/check-box';
 
-initSwitchButton();
-document.body.appendChild(createCheckBox('red', '#1'));
+const root = document.getElementById('root');
+
+root.appendChild(createCheckBox('red', '#1'));
+root.appendChild(createSwitchButton());
