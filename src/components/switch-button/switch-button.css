@@ -1,0 +1,6 @@
+#switch-button {
+    cursor: pointer;
+    color: #108be3;
+    text-align: center;
+    user-select: none;
+}
