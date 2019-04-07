@@ -1,0 +1,2 @@
+(window.webpackJsonp=window.webpackJsonp||[]).push([[0],[function(t,n,o){t.exports=o(1)},function(t,n,o){"use strict";o.r(n);o(2);var e,c,i=document.getElementById("switch-button"),d=!1;i.textContent="Switch to Night Mode",e="click",c=function(){d?u():s()},i.addEventListener(e,c,!1);var s=function(){i.textContent="Switch to Day Mode",document.body.className="night",d=!0},u=function(){i.textContent="Switch to Night Mode",document.body.className="",d=!1}},function(t,n,o){}],[[0,1]]]);
+//# sourceMappingURL=main.a51a2019.chunk.js.map
