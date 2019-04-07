@@ -17,3 +17,7 @@
         width: calc(100% / 3);
     }
 }
+
+.ctr_canvas {
+    border: 1px solid silver;
+}

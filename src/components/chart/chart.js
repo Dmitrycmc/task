@@ -4,12 +4,17 @@ import './chart.css';
 
 export default (data, title) => {
     const wrapper = createElement('crt_wrapper');
-
-    const header = document.createElement('div');
+    const controls = createElement();
+    const header = createElement();
+    const cnv = createElement('ctr_canvas', 'canvas');
     header.textContent = title;
 
+    controls.appendChild(createCheckBox('red', '#1'));
+    controls.appendChild(createCheckBox('green', '#2'));
+
     wrapper.appendChild(header);
-    wrapper.appendChild(createCheckBox('red', '#1'));
+    wrapper.appendChild(cnv);
+    wrapper.appendChild(controls);
 
     return wrapper;
 };

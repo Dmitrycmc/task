@@ -1,9 +1,12 @@
 .cb_wrapper {
     display: flex;
+    float: left;
     /* fallback for IE */
     width: 8em;
     width: fit-content;
     height: 2em;
+
+    margin: 5px;
 
     border: 1px solid rgba(170, 170, 170, 85);
     border-radius: 1em;
@@ -20,7 +23,7 @@
     margin: 0.4em;
     overflow: hidden;
 
-    border: 1px solid red;
+    border: 1px solid currentColor;
     border-radius: 0.6em;
 
     color: transparent;
@@ -29,7 +32,7 @@
 }
 
 .cb_checked-mark {
-    background-color: red;
+    background-color: currentColor;
 }
 
 .cb_checked-mark .icon {

@@ -10,13 +10,17 @@ export default (color, text, onChange) => {
     let checked = true;
 
     const wrapper = createElement('cb_wrapper');
+
     const mark = createElement(checkedMark);
+    mark.style.color = color;
+
     const label = createElement('cb_label');
     label.textContent = text;
 
     wrapper.appendChild(mark);
-    mark.appendChild(createCheckIcon());
     wrapper.appendChild(label);
+
+    mark.appendChild(createCheckIcon());
 
     addListener(wrapper, 'click', () => {
         checked = !checked;
