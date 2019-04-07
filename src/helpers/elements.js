@@ -5,14 +5,14 @@ export const createElement = (className, tag = 'div') => {
 };
 
 export const createSvgElement = (tag, attrs, className) => {
-    const node = document.createElementNS("http://www.w3.org/2000/svg", tag);
+    const node = document.createElementNS('http://www.w3.org/2000/svg', tag);
     if (className) {
         node.className.baseVal = className;
     }
     if (attrs) {
         Object.keys(attrs).forEach(key => {
             node.setAttribute(key, attrs[key]);
-        })
+        });
     }
     return node;
 };
