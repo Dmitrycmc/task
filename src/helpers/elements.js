@@ -10,8 +10,8 @@ export const createSvgElement = (tag, attrs, className) => {
         node.className.baseVal = className;
     }
     if (attrs) {
-        Object.entries(attrs).forEach(([key, val]) => {
-            node.setAttribute(key, val);
+        Object.keys(attrs).forEach(key => {
+            node.setAttribute(key, attrs[key]);
         })
     }
     return node;
