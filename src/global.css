@@ -1,5 +1,6 @@
 html {
   font-size: 16px;
+  font-family: Helvetica, Arial, sans-serif;
 }
 
 h2 {
@@ -7,9 +8,10 @@ h2 {
 }
 
 body {
-  transition: background-color 0.2s;
+  transition: all 0.2s;
 }
 
 .night {
   background-color: #242f3e;
+  color: white;
 }

@@ -1,8 +1,7 @@
 import './switch-button.css';
-
 import { addListener } from "../../helpers/event-listeners";
 
-const node = document.getElementById("switch-button");
+const node = document.getElementById("btn-switch");
 
 const nightLabel = "Switch to Day Mode";
 const dayLabel = "Switch to Night Mode";
