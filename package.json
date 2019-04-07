@@ -1,0 +1,35 @@
+{
+  "name": "task",
+  "author": {
+    "name": "Lytov Dmitry",
+    "email": "Dmitrycmc@gmail.com",
+    "url": "https://github.com/Dmitrycmc"
+  },
+  "version": "0.1.0",
+  "private": true,
+  "homepage": "http://Dmitrycmc.github.io/task",
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build",
+    "lint:fix": "eslint src --fix"
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not ie <= 11",
+    "not op_mini all"
+  ],
+  "devDependencies": {
+    "react-scripts": "^2.1.8",
+    "gh-pages": "^2.0.1",
+    "eslint-plugin-prettier": "^3.0.0",
+    "prettier": "^1.15.2"
+  }
+}
