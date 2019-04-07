@@ -1,7 +1,5 @@
 #btn-switch {
-
-    width: fit-content;
-    margin: auto;
+    display: inline-block;
 
     color: #108be3;
 
