@@ -1,5 +1,5 @@
-export const createElement = (className, tag='div') => {
+export const createElement = (className, tag = 'div') => {
     const node = document.createElement(tag);
-    if (className) node.className=className;
+    if (className) node.className = className;
     return node;
-}
+};

@@ -4,4 +4,3 @@ import createCheckBox from './components/check-box/check-box';
 
 initSwitchButton();
 document.body.appendChild(createCheckBox('red', '#1'));
-

@@ -1,31 +1,33 @@
 import './switch-button.css';
-import { addListener } from "../../helpers/event-listeners";
+import { addListener } from '../../helpers/event-listeners';
 
-const node = document.getElementById("btn-switch");
+const node = document.getElementById('btn-switch');
 
-const nightLabel = "Switch to Day Mode";
-const dayLabel = "Switch to Night Mode";
+const nightLabel = 'Switch to Day Mode';
+const dayLabel = 'Switch to Night Mode';
 
 let night = false;
 
 const switchToNight = () => {
-    node.textContent=nightLabel;
-    document.body.className="night";
+    node.textContent = nightLabel;
+    document.body.className = 'night';
     night = true;
 };
 
 const switchToDay = () => {
-    node.textContent=dayLabel;
-    document.body.className="";
+    node.textContent = dayLabel;
+    document.body.className = '';
     night = false;
 };
 
 export default () => {
-    node.textContent=dayLabel;
+    node.textContent = dayLabel;
 
     addListener(node, 'click', () => {
         if (night) {
             switchToDay();
-        } else {switchToNight();}
+        } else {
+            switchToNight();
+        }
     });
 };

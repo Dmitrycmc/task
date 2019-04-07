@@ -1,6 +1,8 @@
 #btn-switch {
-    cursor: pointer;
     color: #108be3;
     text-align: center;
+
+    cursor: pointer;
+
     user-select: none;
 }

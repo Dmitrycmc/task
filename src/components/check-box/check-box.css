@@ -1,26 +1,31 @@
 .cb_wrapper {
-    border: 1px solid rgba(170, 170, 170, 85);
-    border-radius: 1em;
-    height: 2em;
+    display: flex;
     /* fallback for IE */
     width: 8em;
     width: fit-content;
-    display: flex;
+    height: 2em;
+
+    border: 1px solid rgba(170, 170, 170, 85);
+    border-radius: 1em;
+
     cursor: pointer;
 
     user-select: none;
 }
 
 .cb_unchecked-mark, .cb_checked-mark {
-    margin: 0.4em;
+    box-sizing: border-box;
     width: 1.2em;
     height: 1.2em;
+    margin: 0.4em;
+    overflow: hidden;
+
     border: 1px solid red;
     border-radius: 0.6em;
-    box-sizing: border-box;
-    transition: background-color 0.5s;
+
     color: transparent;
-    overflow: hidden;
+
+    transition: background-color 0.5s;
 }
 
 .cb_checked-mark {
@@ -33,15 +38,19 @@
 
 .cb_label {
     margin: 0.5em 0.5em 0.5em 0;
+
     font-weight: normal;
 }
 
 .icon {
-    margin: 0.2em;
-    color: inherit;
     position: relative;
     top: -2em;
-    transition: top 0.5s;
-    height: 0.7em;
+
     width: 0.7em;
+    height: 0.7em;
+    margin: 0.2em;
+
+    color: inherit;
+
+    transition: top 0.5s;
 }
