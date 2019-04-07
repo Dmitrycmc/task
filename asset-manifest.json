@@ -1,9 +1,9 @@
 {
-  "main.js": "/telegram-chart/static/js/main.3f7dc27d.chunk.js",
-  "main.js.map": "/telegram-chart/static/js/main.3f7dc27d.chunk.js.map",
-  "runtime~main.js": "/telegram-chart/static/js/runtime~main.27d9b38b.js",
-  "runtime~main.js.map": "/telegram-chart/static/js/runtime~main.27d9b38b.js.map",
-  "index.html": "/telegram-chart/index.html",
-  "precache-manifest.65a7f9dfb5e2a25c672577a3bee21ca1.js": "/telegram-chart/precache-manifest.65a7f9dfb5e2a25c672577a3bee21ca1.js",
-  "service-worker.js": "/telegram-chart/service-worker.js"
+  "main.js": "/task/static/js/main.3f7dc27d.chunk.js",
+  "main.js.map": "/task/static/js/main.3f7dc27d.chunk.js.map",
+  "runtime~main.js": "/task/static/js/runtime~main.b8adadc9.js",
+  "runtime~main.js.map": "/task/static/js/runtime~main.b8adadc9.js.map",
+  "index.html": "/task/index.html",
+  "precache-manifest.323d0294adc0e3904422585dea566351.js": "/task/precache-manifest.323d0294adc0e3904422585dea566351.js",
+  "service-worker.js": "/task/service-worker.js"
 }
