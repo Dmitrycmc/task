@@ -14,7 +14,7 @@ export default (data, title) => {
     const { colors, names } = data;
 
     Object.keys(colors).forEach(key => {
-        controls.appendChild(createCheckBox(colors[key], names[key]));
+        controls.appendChild(createCheckBox(colors[key], names[key], value => alert(key + ' ' + value)));
     });
 
     wrapper.appendChild(header);

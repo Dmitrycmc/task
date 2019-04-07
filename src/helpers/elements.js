@@ -3,3 +3,16 @@ export const createElement = (className, tag = 'div') => {
     if (className) node.className = className;
     return node;
 };
+
+export const createSvgElement = (tag, attrs, className) => {
+    const node = document.createElementNS("http://www.w3.org/2000/svg", tag);
+    if (className) {
+        node.className.baseVal = className;
+    }
+    if (attrs) {
+        Object.entries(attrs).forEach(([key, val]) => {
+            node.setAttribute(key, val);
+        })
+    }
+    return node;
+};

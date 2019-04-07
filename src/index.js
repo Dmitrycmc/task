@@ -7,6 +7,7 @@ import { createElement } from './helpers/elements';
 const root = document.getElementById('root');
 
 const charts = createElement();
+
 data.forEach(chartData => charts.appendChild(createChart(chartData, 'Chart #1')));
 
 root.appendChild(charts);
