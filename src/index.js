@@ -1,13 +1,17 @@
 import './global.css';
 import createSwitchButton from './components/switch-button/switch-button';
 import createChart from './components/chart/chart';
+import data from './data';
+import { createElement } from './helpers/elements';
 
 const root = document.getElementById('root');
 
-root.appendChild(createChart('', 'Chart #1'));
-root.appendChild(createChart('', 'Chart #2'));
-root.appendChild(createChart('', 'Chart #3'));
-root.appendChild(createChart('', 'Chart #4'));
-root.appendChild(createChart('', 'Chart #5'));
-root.appendChild(createChart('', 'Chart #6'));
-root.appendChild(createSwitchButton());
+const charts = createElement();
+
+data.forEach(chartData => charts.appendChild(createChart(chartData, 'Chart #1')));
+
+const footer = createElement('footer');
+footer.appendChild(createSwitchButton());
+
+root.appendChild(charts);
+root.appendChild(footer);
