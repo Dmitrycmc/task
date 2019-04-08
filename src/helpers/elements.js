@@ -16,10 +16,3 @@ export const createSvgElement = (tag, attrs, className) => {
     }
     return node;
 };
-
-export const getSize = el => {
-    const style = window.getComputedStyle(el);
-    const w = parseFloat(style.width);
-    const h = parseFloat(style.height);
-    return { w, h };
-};
