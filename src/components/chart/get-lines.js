@@ -29,49 +29,16 @@ const getLine = (d, stroke) => {
 
     const mapLine = createSvgElement('path', { 'vector-effect': 'non-scaling-stroke', d, stroke }, 'line');
 
-    const mapAreaYTransformation = createSvgElement('g');
-    const mapViewportTransformation = createSvgElement('g');
+    const mapAreaYTransform = createSvgElement('g');
 
-    mapAreaYTransformation.appendChild(mapLine);
-    mapViewportTransformation.appendChild(mapAreaYTransformation);
+    mapAreaYTransform.appendChild(mapLine);
 
-    const chartAreaXTransformation = createSvgElement('g');
-    const chartAreaYTransformation = createSvgElement('g', {}, 'animated');
-    const userViewportTransformation = createSvgElement('g');
+    const chartAreaYTransform = createSvgElement('g', {}, 'animated');
 
-    chartAreaXTransformation.appendChild(chartLine);
-    chartAreaYTransformation.appendChild(chartAreaXTransformation);
-    userViewportTransformation.appendChild(chartAreaYTransformation);
-
-    const setUserViewport = (w, h) => {
-        setViewport(userViewportTransformation, w, h);
-    };
-
-    const setMapViewport = (w, h) => {
-        setViewport(mapViewportTransformation, w, h);
-    };
-
-    const setViewport = (element, w, h) => {
-        element.setAttribute(
-            'transform',
-            `  
-            scale(${w} ${h})
-        `
-        );
-    };
-
-    const setXChartArea = (x0, x1) => {
-        chartAreaXTransformation.setAttribute(
-            'transform',
-            `
-            scale(${1 / (x1 - x0)} 1) 
-            translate(${-x0} 0)
-        `
-        );
-    };
+    chartAreaYTransform.appendChild(chartLine);
 
     const setYChartArea = (y0, y1) => {
-        chartAreaYTransformation.setAttribute(
+        chartAreaYTransform.setAttribute(
             'transform',
             `
             scale(1 ${1 / (y1 - y0)}) 
@@ -81,7 +48,7 @@ const getLine = (d, stroke) => {
     };
 
     const setYMapArea = (y0, y1) => {
-        mapAreaYTransformation.setAttribute(
+        mapAreaYTransform.setAttribute(
             'transform',
             `
             scale(1 ${1 / (y1 - y0)}) 
@@ -102,12 +69,9 @@ const getLine = (d, stroke) => {
     };
 
     return {
-        chartNode: userViewportTransformation,
-        setUserViewport,
-        setXChartArea,
+        chartNode: chartAreaYTransform,
         setYChartArea,
-        mapNode: mapViewportTransformation,
-        setMapViewport,
+        mapNode: mapAreaYTransform,
         setYMapArea,
         visibility
     };
