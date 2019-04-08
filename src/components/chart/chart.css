@@ -24,11 +24,11 @@
 .line {
     stroke-width: 2px;
 
-    transition: stroke 2s;
+    transition: stroke 0.5s;
 
     fill: none;
 }
 
 .animated {
-    transition: transform 1s;
+    transition: transform 0.5s;
 }

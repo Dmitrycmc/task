@@ -24,28 +24,34 @@ export default (data, title) => {
 
         const keys = Object.keys(colors);
 
-        keys.forEach(key => {
-            svg.appendChild(lines[key].node);
-            controls.appendChild(createCheckBox(colors[key], names[key], value => lines[key].setVisibility(value)));
-        });
+        const updateYChartArea = () => {
+            keys.forEach(key => {
+                const { min, max } = minmax(
+                    keys.map(key => lines[key]).map(({ visibility, y0, y1 }) => ({ visible: visibility(), y0, y1 }))
+                );
+                lines[key].setYChartArea(min, max);
+            });
+        };
 
-        keys.forEach(key => {
-            const { min, max } = minmax(
-                keys.map(key => lines[key]).map(({ visibility, y0, y1 }) => ({ visible: visibility(), y0, y1 }))
-            );
-            lines[key].setYChartArea(min, max);
-        });
-
-        const updateChart = () => {
+        const updateSvgBounds = () => {
             const { w: svgWidth, h: svgHeight } = getSize(svg);
             keys.forEach(key => {
                 lines[key].setUserViewport(svgWidth, svgHeight);
             });
         };
 
-        updateChart();
+        keys.forEach(key => {
+            svg.appendChild(lines[key].node);
+            controls.appendChild(createCheckBox(colors[key], names[key], value => {
+                lines[key].visibility(value);
+                updateYChartArea();
+            }));
+        });
 
-        addListener(window, 'resize', updateChart);
+        updateYChartArea();
+        updateSvgBounds();
+
+        addListener(window, 'resize', updateSvgBounds);
     };
 
     return {
