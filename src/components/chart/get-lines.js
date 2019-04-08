@@ -27,7 +27,11 @@ const getLine = (points, stroke) => {
         'line'
     );
 
-    const mapLine = createSvgElement('polyline', { 'vector-effect': 'non-scaling-stroke', points, stroke }, 'line');
+    const mapLine = createSvgElement(
+        'polyline',
+        { 'stroke-linejoin': 'round', 'vector-effect': 'non-scaling-stroke', points, stroke },
+        'line'
+    );
 
     const mapAreaYTransform = createSvgElement('g', {}, 'animated');
 
@@ -70,9 +74,9 @@ const getLine = (points, stroke) => {
     };
 
     return {
-        chartNode: chartAreaYTransform,
+        chartLineNode: chartAreaYTransform,
         setYChartArea,
-        mapNode: mapAreaYTransform,
+        mapLineNode: mapAreaYTransform,
         setYMapArea,
         visibility
     };

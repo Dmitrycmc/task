@@ -4,20 +4,18 @@ import { createElement, createSvgElement, getSize } from '../../helpers/elements
 import './chart.css';
 import { minmax } from '../../helpers/utils';
 import { addListener } from '../../helpers/event-listeners';
+import createMap from './map';
 
 export default (data, title) => {
     const chartSvg = createSvgElement('svg', {}, 'ctr_chart');
-    const mapSvg = createSvgElement('svg', {}, 'ctr_map-chart');
 
     const chartViewportTransform = createSvgElement('g');
     const chartAreaXTransform = createSvgElement('g');
-    const mapViewportTransform = createSvgElement('g');
 
     const { colors, names } = data;
 
     const wrapper = createElement('crt_wrapper');
     const controls = createElement('crt_controls');
-    const map = createElement('ctr_map-container');
     const header = createElement();
     header.textContent = title;
 
@@ -25,13 +23,12 @@ export default (data, title) => {
     wrapper.appendChild(chartSvg);
     chartSvg.appendChild(chartViewportTransform);
     chartViewportTransform.appendChild(chartAreaXTransform);
-    wrapper.appendChild(map);
     wrapper.appendChild(controls);
-    map.appendChild(mapSvg);
-    mapSvg.appendChild(mapViewportTransform);
 
     const init = () => {
         const lines = getLines(data);
+        const { mapNode, setMapViewport, appendBeforeOverlay, setMapWindow } = createMap();
+
         const keys = Object.keys(colors);
 
         const updateYChartArea = () => {
@@ -45,15 +42,7 @@ export default (data, title) => {
         };
 
         const setUserViewport = (w, h) => {
-            setViewport(chartViewportTransform, w, h);
-        };
-
-        const setMapViewport = (w, h) => {
-            setViewport(mapViewportTransform, w, h);
-        };
-
-        const setViewport = (element, w, h) => {
-            element.setAttribute('transform', `scale(${w} ${h})`);
+            chartViewportTransform.setAttribute('transform', `scale(${w} ${h})`);
         };
 
         const setXChartArea = (x0, x1) => {
@@ -67,25 +56,31 @@ export default (data, title) => {
 
         const updateSvgBounds = () => {
             const { w: svgWidth, h: svgHeight } = getSize(chartSvg);
-            const { w: mapWidth, h: mapHeight } = getSize(map);
+            const { w: mapWidth, h: mapHeight } = getSize(mapNode);
             setUserViewport(svgWidth, svgHeight);
             setMapViewport(mapWidth, mapHeight);
         };
 
-        keys.forEach(key => {
-            chartAreaXTransform.appendChild(lines[key].chartNode);
-            mapViewportTransform.appendChild(lines[key].mapNode);
-            controls.appendChild(
-                createCheckBox(colors[key], names[key], value => {
-                    lines[key].visibility(value);
-                    updateYChartArea();
-                })
-            );
-        });
+        const mount = () => {
+            wrapper.insertBefore(mapNode, controls);
 
+            keys.forEach(key => {
+                chartAreaXTransform.appendChild(lines[key].chartLineNode);
+                appendBeforeOverlay(lines[key].mapLineNode);
+                controls.appendChild(
+                    createCheckBox(colors[key], names[key], value => {
+                        lines[key].visibility(value);
+                        updateYChartArea();
+                    })
+                );
+            });
+        };
+
+        mount();
         updateYChartArea();
         updateSvgBounds();
-///        setXChartArea(-1, 2);
+        setXChartArea(0.5, 0.75);
+        setMapWindow(0.5, 0.75);
         addListener(window, 'resize', updateSvgBounds);
     };
 
