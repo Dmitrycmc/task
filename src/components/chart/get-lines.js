@@ -21,22 +21,38 @@ const generatePathAndFindMinMaxY = (x, y) => {
 const getLine = (d, stroke) => {
     let visible = true;
 
-    const line = createSvgElement(
+    const chartLine = createSvgElement(
         'path',
         { 'stroke-linejoin': 'round', 'vector-effect': 'non-scaling-stroke', d, stroke },
         'line'
     );
 
+    const mapLine = createSvgElement('path', { 'vector-effect': 'non-scaling-stroke', d, stroke }, 'line');
+
+    const mapAreaYTransformation = createSvgElement('g');
+    const mapViewportTransformation = createSvgElement('g');
+
+    mapAreaYTransformation.appendChild(mapLine);
+    mapViewportTransformation.appendChild(mapAreaYTransformation);
+
     const chartAreaXTransformation = createSvgElement('g');
     const chartAreaYTransformation = createSvgElement('g', {}, 'animated');
     const userViewportTransformation = createSvgElement('g');
 
-    chartAreaXTransformation.appendChild(line);
+    chartAreaXTransformation.appendChild(chartLine);
     chartAreaYTransformation.appendChild(chartAreaXTransformation);
     userViewportTransformation.appendChild(chartAreaYTransformation);
 
     const setUserViewport = (w, h) => {
-        userViewportTransformation.setAttribute(
+        setViewport(userViewportTransformation, w, h);
+    };
+
+    const setMapViewport = (w, h) => {
+        setViewport(mapViewportTransformation, w, h);
+    };
+
+    const setViewport = (element, w, h) => {
+        element.setAttribute(
             'transform',
             `  
             scale(${w} ${h})
@@ -64,6 +80,16 @@ const getLine = (d, stroke) => {
         );
     };
 
+    const setYMapArea = (y0, y1) => {
+        mapAreaYTransformation.setAttribute(
+            'transform',
+            `
+            scale(1 ${1 / (y1 - y0)}) 
+            translate(0 ${-y0})
+        `
+        );
+    };
+
     const visibility = flag => {
         if (flag === undefined) {
             /* reading */
@@ -71,15 +97,18 @@ const getLine = (d, stroke) => {
         } else {
             /* writing */
             visible = flag;
-            line.setAttribute('stroke', flag ? stroke : 'transparent');
+            chartLine.setAttribute('stroke', flag ? stroke : 'transparent');
         }
     };
 
     return {
-        node: userViewportTransformation,
+        chartNode: userViewportTransformation,
         setUserViewport,
         setXChartArea,
         setYChartArea,
+        mapNode: mapViewportTransformation,
+        setMapViewport,
+        setYMapArea,
         visibility
     };
 };
@@ -97,10 +126,6 @@ export default ({ types, columns, colors }) => {
     const yKeysToLines = yKeys.reduce((obj, yKey) => {
         const { d, y0, y1 } = generatePathAndFindMinMaxY(xColumn, yColumns[yKey]);
         const line = getLine(d, colors[yKey]);
-        line.setUserViewport(1000, 500);
-        line.setXChartArea(0, 1);
-        line.setYChartArea(0, 1000000000);
-
         return {
             ...obj,
             [yKey]: {

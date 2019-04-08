@@ -9,7 +9,7 @@ const root = document.getElementById('root');
 root.appendChild(charts);
 root.appendChild(createFooter());
 
-data.forEach((chartData, i) => {
+data.forEach(chartData => {
     const { node, init } = createChart(chartData, 'Chart #1');
     charts.appendChild(node);
     init();
