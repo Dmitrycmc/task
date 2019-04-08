@@ -3,15 +3,14 @@ import createChart from './components/chart/chart';
 import createFooter from './components/footer/footer';
 import data from './data';
 import { createElement } from './helpers/elements';
-import renderChart from './components/chart/render-chart';
-
-const root = document.getElementById('root');
 
 const charts = createElement();
-
-data.forEach((chartData, i) => charts.appendChild(createChart(chartData, 'Chart #1', i)));
-
+const root = document.getElementById('root');
 root.appendChild(charts);
 root.appendChild(createFooter());
 
-data.forEach((chartData, i) => renderChart(document.getElementById('chart' + i), chartData));
+data.forEach((chartData, i) => {
+    const { node, init } = createChart(chartData, 'Chart #1');
+    charts.appendChild(node);
+    init();
+});
