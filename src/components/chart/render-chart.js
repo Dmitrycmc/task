@@ -1,44 +1,53 @@
-import { createSvgElement } from '../../helpers/elements';
+import {createSvgElement, getSize} from '../../helpers/elements';
 
-const render = (x, y, svgWidth, svgHeight, stroke) => {
-
+const generatePathAndFindMinMaxY = (x, y) => {
     const length = x.length;
 
     let xMin = x[1],
         dx = x[length - 1] - xMin,
-        yMin = y[1],
-        yMax = y[1];
+        y0 = y[1],
+        y1 = y[1];
     let d = 'M ' + (x[1] - xMin) / dx + ' ' + y[1] + ' ';
 
     for (let i = 2; i < length; i++) {
         d += 'L ' + ((x[i] - xMin) / dx) + ' ' + y[i] + ' ';
-        yMin = Math.min(y[i], yMin);
-        yMax = Math.max(y[i], yMax);
+        y0 = Math.min(y[i], y0);
+        y1 = Math.max(y[i], y1);
     }
 
-    const dy = yMax - yMin;
+    return {d, y0, y1};
+};
 
-    const x0 = 0;
-    const x1 = 1;
-
-    const g = createSvgElement('g', {
-        'vector-effect': 'non-scaling-stroke',
-        transform: `
-            scale(${svgWidth} ${svgHeight})
-            scale(${1 / (x1 - x0)} ${1 / dy}) 
-            translate(${-x0} ${-yMin})
-        `
-    });
-
-    g.appendChild(
-        createSvgElement(
-            'path',
-            { 'stroke-linejoin': 'round', 'vector-effect': 'non-scaling-stroke', d, stroke },
-            'line'
-        )
+const renderLine = (d, stroke) => {
+    const line = createSvgElement(
+        'path',
+        { 'stroke-linejoin': 'round', 'vector-effect': 'non-scaling-stroke', d, stroke },
+        'line'
     );
+    const chartViewport = createSvgElement('g');
+    const userViewport = createSvgElement('g');
 
-    return g;
+    chartViewport.appendChild(line);
+    userViewport.appendChild(chartViewport);
+
+    const setUserViewport = (w, h) => {
+        userViewport.setAttribute('transform', `  
+            scale(${w} ${h})
+        `);
+    };
+
+    const setChartViewport = ([x0, x1], [y0, y1]) => {
+        chartViewport.setAttribute('transform', `
+            scale(${1 / (x1 - x0)} ${1 / (y1 - y0)}) 
+            translate(${-x0} ${-y0})
+        `);
+    };
+
+    return {
+        node: userViewport,
+        setUserViewport,
+        setChartViewport
+    };
 };
 
 export default (svg, { types, columns, colors }) => {
@@ -51,9 +60,27 @@ export default (svg, { types, columns, colors }) => {
         {}
     );
 
-    const style = window.getComputedStyle(svg);
-    const svgWidth = parseFloat(style.width);
-    const svgHeight = parseFloat(style.height);
+    const {w: svgWidth, h: svgHeight} = getSize(svg);
 
-    yKeys.forEach(yKey => svg.appendChild(render(xColumn, yColumns[yKey], svgWidth, svgHeight, colors[yKey])));
+    let yMin = null;
+    let yMax = null;
+    const yKeyToSetterChartViewport = {};
+
+
+    yKeys.forEach(yKey => {
+        const {d, y0, y1} = generatePathAndFindMinMaxY(xColumn, yColumns[yKey]);
+        const {node, setUserViewport, setChartViewport} = renderLine(d, colors[yKey]);
+
+        yMin=Math.min(yMin || y0, y0);
+        yMax=Math.max(yMax || y1, y1);
+
+        yKeyToSetterChartViewport[yKey] = setChartViewport;
+        setUserViewport(svgWidth, svgHeight);
+        svg.appendChild(node);
+
+    });
+
+    yKeys.forEach(yKey => {
+        yKeyToSetterChartViewport[yKey]([0, 1], [yMin, yMax]);
+    });
 };
