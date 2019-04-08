@@ -23,6 +23,10 @@ export const addDragAndDropListeners = (element, listener) => {
         const offset = getMouseOffset(e);
 
         const onMouseMove = e => {
+            if (e.buttons !== 1) {
+                removeListener(document.body, 'mousemove', onMouseMove);
+                removeListener(document.body, 'mouseup', onMouseUp);
+            }
             const mouseCoords = getMouseCoords(e);
             const cornerCoords = { x: mouseCoords.x - offset.x, y: mouseCoords.y + offset.y };
             listener(cornerCoords);

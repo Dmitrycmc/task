@@ -2,9 +2,11 @@ import createCheckBox from '../check-box/check-box';
 import getLines from './get-lines';
 import { createElement, createSvgElement } from '../../helpers/elements';
 import './chart.css';
-import { minmax } from '../../helpers/utils';
+import { boundBy, minmax } from '../../helpers/utils';
 import { addDragAndDropListeners, addListener } from '../../helpers/event-listeners';
 import createMap from './map';
+
+const MIN_WIN_WIDTH = 0.1;
 
 export default (data, title) => {
     const chartSvg = createSvgElement('svg', {}, 'ctr_chart');
@@ -107,9 +109,20 @@ export default (data, title) => {
             return (x - rect.left) / rect.width;
         };
 
-        addDragAndDropListeners(mapWindow, coords => updateXBounds(getMapX(coords.x), getMapX(coords.x) + (x1 - x0)));
-        addDragAndDropListeners(windowLeftEdge, coords => updateXBounds(getMapX(coords.x + 10), x1));
-        addDragAndDropListeners(windowRightEdge, coords => updateXBounds(x0, getMapX(coords.x)));
+        addDragAndDropListeners(mapWindow, coords => {
+            const width = x1 - x0;
+            const left = getMapX(coords.x);
+            const right = left + width;
+            updateXBounds(boundBy(left, 0, 1 - width), boundBy(right, width, 1));
+        });
+        addDragAndDropListeners(windowLeftEdge, coords => {
+            const left = getMapX(coords.x + 10);
+            updateXBounds(boundBy(left, 0, x1 - MIN_WIN_WIDTH), x1);
+        });
+        addDragAndDropListeners(windowRightEdge, coords => {
+            const right = getMapX(coords.x);
+            updateXBounds(x0, boundBy(right, x0 + MIN_WIN_WIDTH, 1));
+        });
     };
 
     return {

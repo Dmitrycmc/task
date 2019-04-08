@@ -13,7 +13,6 @@
 
     cursor: pointer;
 
-    user-select: none;
 }
 
 .cb_unchecked-mark, .cb_checked-mark {

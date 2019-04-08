@@ -13,6 +13,8 @@ body {
   text-align: center;
 
   transition: background-color 0.2s, color 0.2s;
+
+  user-select: none;
 }
 
 .night {

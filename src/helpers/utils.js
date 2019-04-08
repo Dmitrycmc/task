@@ -9,3 +9,9 @@ export const minmax = arr => {
 
     return { min, max };
 };
+
+export const boundBy = (x, left, right) => {
+    x = left === undefined ? x : Math.max(left, x);
+    x = right === undefined ? x : Math.min(right, x);
+    return x;
+};

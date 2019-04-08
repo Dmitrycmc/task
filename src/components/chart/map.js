@@ -3,9 +3,11 @@ import { createElement, createSvgElement } from '../../helpers/elements';
 export default () => {
     const mapSvg = createSvgElement('svg', {}, 'ctr_map-chart');
     const map = createElement('ctr_map-container');
+    const svgWrapper = createElement('ctr_map-svg-wrapper');
     const mapViewportTransform = createSvgElement('g');
 
-    map.appendChild(mapSvg);
+    svgWrapper.appendChild(mapSvg);
+    map.appendChild(svgWrapper);
     mapSvg.appendChild(mapViewportTransform);
 
     const mapOverlayLeft = createSvgElement('rect', { x: 0, y: 0, width: 0, height: 1 }, 'crt_map-overlay');
@@ -37,7 +39,7 @@ export default () => {
         mapWindow.style.left = `${x0 * mapWidth}px`;
         mapWindow.style.width = `${(x1 - x0) * mapWidth}px`;
         windowLeftEdge.style.left = `${x0 * mapWidth - 10}px`;
-        windowRightEdge.style.left = `${x1 * mapWidth}px`;
+        windowRightEdge.style.left = `${x1 * mapWidth - 1}px`;
     };
 
     return {
