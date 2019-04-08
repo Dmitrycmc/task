@@ -52,6 +52,16 @@ export default (data, title) => {
             mapWindow
         } = createMap();
 
+        const initYMapArea = () => {
+            const { min, max } = minmax(
+                keys.map(key => (getYBounds(key)))
+            );
+
+            keys.forEach(key => {
+                lines[key].setYMapArea(min, max);
+            });
+        }
+
         const updateYArea = () => {
             const { min, max } = minmax(
                 keys.map(key => (lines[key].visibility() ? getYBounds(key) : null)).filter(a => !!a)
@@ -59,7 +69,6 @@ export default (data, title) => {
 
             keys.forEach(key => {
                 lines[key].setYChartArea(min, max);
-                lines[key].setYMapArea(min, max);
             });
         };
 
@@ -115,6 +124,7 @@ export default (data, title) => {
         };
 
         mount();
+        initYMapArea();
         deepUpdateYArea();
         onResize();
         addListener(window, 'resize', onResize);
