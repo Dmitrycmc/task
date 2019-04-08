@@ -2,7 +2,7 @@ import createCheckBox from '../check-box/check-box';
 import getLines from './get-lines';
 import { createElement, createSvgElement } from '../../helpers/elements';
 import './chart.css';
-import { boundBy, minmax } from '../../helpers/utils';
+import { boundBy, calcYBounds, minmax } from '../../helpers/utils';
 import { addDragAndDropListeners, addListener } from '../../helpers/event-listeners';
 import createMap from './map';
 
@@ -11,13 +11,23 @@ const MIN_WIN_WIDTH = 0.1;
 export default (data, title) => {
     const chartSvg = createSvgElement('svg', {}, 'ctr_chart');
 
+    const { colors, names, types, columns } = data;
+
+    const xKey = Object.keys(types).filter(key => types[key] === 'x')[0];
+    const xColumn = columns.filter(column => column[0] === xKey)[0];
+
+    const keys = Object.keys(types).filter(key => types[key] !== 'x');
+    const yColumns = keys.reduce((obj, key) => ({ ...obj, [key]: columns.filter(column => column[0] === key)[0] }), {});
+
     let x0 = 0.1;
     let x1 = 0.8;
 
+    let keyToYBound = {};
+    const getYBounds = key => keyToYBound[key] || (keyToYBound[key] = calcYBounds(xColumn, yColumns[key], x0, x1));
+    const resetYBoundsCash = () => (keyToYBound = {});
+
     const chartViewportTransform = createSvgElement('g');
     const chartAreaXTransform = createSvgElement('g');
-
-    const { colors, names } = data;
 
     const wrapper = createElement('crt_wrapper');
     const controls = createElement('crt_controls');
@@ -31,7 +41,7 @@ export default (data, title) => {
     wrapper.appendChild(controls);
 
     const init = () => {
-        const lines = getLines(data);
+        const lines = getLines(keys, xColumn, yColumns, colors);
         const {
             mapNode,
             setMapViewport,
@@ -42,16 +52,20 @@ export default (data, title) => {
             mapWindow
         } = createMap();
 
-        const keys = Object.keys(colors);
+        const updateYArea = () => {
+            const { min, max } = minmax(
+                keys.map(key => (lines[key].visibility() ? getYBounds(key) : null)).filter(a => !!a)
+            );
 
-        const updateYChartArea = () => {
             keys.forEach(key => {
-                const { min, max } = minmax(
-                    keys.map(key => lines[key]).map(({ visibility, y0, y1 }) => ({ excluded: !visibility(), y0, y1 }))
-                );
                 lines[key].setYChartArea(min, max);
                 lines[key].setYMapArea(min, max);
             });
+        };
+
+        const deepUpdateYArea = () => {
+            resetYBoundsCash();
+            updateYArea();
         };
 
         const setUserViewport = (w, h) => {
@@ -66,6 +80,7 @@ export default (data, title) => {
                     translate(${-x0} 0)
                 `
             );
+            deepUpdateYArea();
         };
 
         const updateXBounds = (a, b) => {
@@ -93,14 +108,14 @@ export default (data, title) => {
                 controls.appendChild(
                     createCheckBox(colors[key], names[key], value => {
                         lines[key].visibility(value);
-                        updateYChartArea();
+                        updateYArea();
                     })
                 );
             });
         };
 
         mount();
-        updateYChartArea();
+        deepUpdateYArea();
         onResize();
         addListener(window, 'resize', onResize);
 

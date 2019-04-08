@@ -1,21 +1,17 @@
 import { createSvgElement } from '../../helpers/elements';
 
-const generatePathAndFindMinMaxY = (x, y) => {
+const generatePoints = (x, y) => {
     const length = x.length;
 
     let xMin = x[1],
-        dx = x[length - 1] - xMin,
-        y0 = y[1],
-        y1 = y[1];
-    let d = '' + (x[1] - xMin) / dx + ',' + y[1] + ' ';
+        dx = x[length - 1] - xMin;
+    let points = '' + 0 + ',' + y[1] + ' ';
 
     for (let i = 2; i < length; i++) {
-        d += '' + (x[i] - xMin) / dx + ',' + y[i] + ' ';
-        y0 = Math.min(y[i], y0);
-        y1 = Math.max(y[i], y1);
+        points += '' + (x[i] - xMin) / dx + ',' + y[i] + ' ';
     }
 
-    return { d, y0, y1 };
+    return points;
 };
 
 const getLine = (points, stroke) => {
@@ -82,28 +78,15 @@ const getLine = (points, stroke) => {
     };
 };
 
-export default ({ types, columns, colors }) => {
-    const xKey = Object.keys(types).filter(key => types[key] === 'x')[0];
-    const xColumn = columns.filter(column => column[0] === xKey)[0];
-
-    const yKeys = Object.keys(types).filter(key => types[key] !== 'x');
-    const yColumns = yKeys.reduce(
-        (obj, key) => ({ ...obj, [key]: columns.filter(column => column[0] === key)[0] }),
-        {}
-    );
-
-    const yKeysToLines = yKeys.reduce((obj, yKey) => {
-        const { d, y0, y1 } = generatePathAndFindMinMaxY(xColumn, yColumns[yKey]);
-        const line = getLine(d, colors[yKey]);
+export default (keys, xColumn, yColumns, colors) => {
+    const keysToLines = keys.reduce((obj, key) => {
+        const points = generatePoints(xColumn, yColumns[key]);
+        const line = getLine(points, colors[key]);
         return {
             ...obj,
-            [yKey]: {
-                y0,
-                y1,
-                ...line
-            }
+            [key]: line
         };
     }, {});
 
-    return yKeysToLines;
+    return keysToLines;
 };
