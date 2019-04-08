@@ -68,7 +68,6 @@
     border-style: solid none;
 
     border-color: #c0d1e1;
-    border-radius: 10px;
 }
 
 .crt_map-overlay {
@@ -76,13 +75,11 @@
 }
 
 .crt_map-left-edge {
-    left: 0;
 
     border-radius: 10px 0 0 10px;
 }
 
 .crt_map-right-edge {
-    right: 0;
 
     border-radius: 0 10px 10px 0;
 }
@@ -90,7 +87,7 @@
 .crt_map-left-edge, .crt_map-right-edge {
 
     position: absolute;
-    top: -2px;
+    top: 0px;
 
     width: 10px;
     height: 3em;

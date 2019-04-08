@@ -107,7 +107,8 @@ export default (data, title) => {
             return (x - rect.left) / rect.width;
         };
 
-        addDragAndDropListeners(windowLeftEdge, coords => updateXBounds(getMapX(coords.x), x1));
+        addDragAndDropListeners(mapWindow, coords => updateXBounds(getMapX(coords.x), getMapX(coords.x) + (x1 - x0)));
+        addDragAndDropListeners(windowLeftEdge, coords => updateXBounds(getMapX(coords.x + 10), x1));
         addDragAndDropListeners(windowRightEdge, coords => updateXBounds(x0, getMapX(coords.x)));
     };
 

@@ -17,8 +17,8 @@ export default () => {
     mapViewportTransform.append(mapOverlayLeft);
     mapViewportTransform.append(mapOverlayRight);
     map.append(mapWindow);
-    mapWindow.append(windowLeftEdge);
-    mapWindow.append(windowRightEdge);
+    map.append(windowLeftEdge);
+    map.append(windowRightEdge);
 
     const setMapViewport = (w, h) => {
         mapViewportTransform.setAttribute('transform', `scale(${w} ${h})`);
@@ -34,8 +34,10 @@ export default () => {
         mapOverlayRight.setAttribute('width', 1 - x1);
 
         const mapWidth = map.getBoundingClientRect().width;
-        mapWindow.style.left = `${x0 * mapWidth - 10}px`;
-        mapWindow.style.width = `${(x1 - x0) * mapWidth + 20}px`;
+        mapWindow.style.left = `${x0 * mapWidth}px`;
+        mapWindow.style.width = `${(x1 - x0) * mapWidth}px`;
+        windowLeftEdge.style.left = `${x0 * mapWidth - 10}px`;
+        windowRightEdge.style.left = `${x1 * mapWidth}px`;
     };
 
     return {
