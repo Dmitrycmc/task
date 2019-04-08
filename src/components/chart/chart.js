@@ -40,12 +40,6 @@ export default (data, title) => {
                     keys.map(key => lines[key]).map(({ visibility, y0, y1 }) => ({ excluded: !visibility(), y0, y1 }))
                 );
                 lines[key].setYChartArea(min, max);
-            });
-        };
-
-        const updateYMapArea = () => {
-            keys.forEach(key => {
-                const { min, max } = minmax(keys.map(key => lines[key]));
                 lines[key].setYMapArea(min, max);
             });
         };
@@ -59,21 +53,15 @@ export default (data, title) => {
         };
 
         const setViewport = (element, w, h) => {
-            element.setAttribute(
-                'transform',
-                `  
-            scale(${w} ${h})
-        `
-            );
+            element.setAttribute('transform', `scale(${w} ${h})`);
         };
 
         const setXChartArea = (x0, x1) => {
             chartAreaXTransform.setAttribute(
-                'transform',
+                'transform', `
+                    scale(${1 / (x1 - x0)} 1) 
+                    translate(${-x0} 0)
                 `
-            scale(${1 / (x1 - x0)} 1) 
-            translate(${-x0} 0)
-        `
             );
         };
 
@@ -96,7 +84,6 @@ export default (data, title) => {
         });
 
         updateYChartArea();
-        updateYMapArea();
         updateSvgBounds();
 ///        setXChartArea(-1, 2);
         addListener(window, 'resize', updateSvgBounds);

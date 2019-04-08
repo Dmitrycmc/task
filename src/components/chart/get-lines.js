@@ -7,10 +7,10 @@ const generatePathAndFindMinMaxY = (x, y) => {
         dx = x[length - 1] - xMin,
         y0 = y[1],
         y1 = y[1];
-    let d = 'M ' + (x[1] - xMin) / dx + ' ' + y[1] + ' ';
+    let d = '' + (x[1] - xMin) / dx + ',' + y[1] + ' ';
 
     for (let i = 2; i < length; i++) {
-        d += 'L ' + (x[i] - xMin) / dx + ' ' + y[i] + ' ';
+        d += '' + (x[i] - xMin) / dx + ',' + y[i] + ' ';
         y0 = Math.min(y[i], y0);
         y1 = Math.max(y[i], y1);
     }
@@ -18,18 +18,18 @@ const generatePathAndFindMinMaxY = (x, y) => {
     return { d, y0, y1 };
 };
 
-const getLine = (d, stroke) => {
+const getLine = (points, stroke) => {
     let visible = true;
 
     const chartLine = createSvgElement(
-        'path',
-        { 'stroke-linejoin': 'round', 'vector-effect': 'non-scaling-stroke', d, stroke },
+        'polyline',
+        { 'stroke-linejoin': 'round', 'vector-effect': 'non-scaling-stroke', points, stroke },
         'line'
     );
 
-    const mapLine = createSvgElement('path', { 'vector-effect': 'non-scaling-stroke', d, stroke }, 'line');
+    const mapLine = createSvgElement('polyline', { 'vector-effect': 'non-scaling-stroke', points, stroke }, 'line');
 
-    const mapAreaYTransform = createSvgElement('g');
+    const mapAreaYTransform = createSvgElement('g', {}, 'animated');
 
     mapAreaYTransform.appendChild(mapLine);
 
@@ -65,6 +65,7 @@ const getLine = (d, stroke) => {
             /* writing */
             visible = flag;
             chartLine.setAttribute('stroke', flag ? stroke : 'transparent');
+            mapLine.setAttribute('stroke', flag ? stroke : 'transparent');
         }
     };
 
