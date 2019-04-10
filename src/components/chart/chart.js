@@ -164,6 +164,7 @@ export default (data, title) => {
             updateXBounds(x0, boundBy(right, x0 + MIN_WIN_WIDTH, 1));
         });
         addListener(chartSvg, 'mousemove', e => updateIntersections(x0 + (x1 - x0) * getChartX(e.clientX)));
+        addListener(chartSvg, 'touchmove', e => updateIntersections(x0 + (x1 - x0) * getChartX(e.touches[0].clientX)));
     };
 
     return {
