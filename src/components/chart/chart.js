@@ -1,10 +1,10 @@
 import createCheckBox from '../check-box/check-box';
-import getLines from './get-lines';
+import getLines from './line';
 import { createElement, createSvgElement } from '../../helpers/elements';
 import './chart.css';
-import { boundBy, calcYBounds, minmax } from '../../helpers/utils';
+import { boundBy, calcYBounds, interpolate, minmax, relToAbs } from '../../helpers/utils';
 import { addDragAndDropListeners, addListener } from '../../helpers/event-listeners';
-import createMap from './map';
+import createMap from '../map/map';
 
 const MIN_WIN_WIDTH = 0.1;
 
@@ -19,8 +19,10 @@ export default (data, title) => {
     const keys = Object.keys(types).filter(key => types[key] !== 'x');
     const yColumns = keys.reduce((obj, key) => ({ ...obj, [key]: columns.filter(column => column[0] === key)[0] }), {});
 
-    let x0 = 0.1;
-    let x1 = 0.8;
+    let x0 = 0;
+    let x1 = 1;
+    let y0 = 0;
+    let y1 = 1;
 
     let keyToYBound = {};
     const getYBounds = key => keyToYBound[key] || (keyToYBound[key] = calcYBounds(xColumn, yColumns[key], x0, x1));
@@ -53,23 +55,30 @@ export default (data, title) => {
         } = createMap();
 
         const initYMapArea = () => {
-            const { min, max } = minmax(
-                keys.map(key => (getYBounds(key)))
-            );
+            const { min, max } = minmax(keys.map(key => getYBounds(key)));
 
             keys.forEach(key => {
                 lines[key].setYMapArea(min, max);
             });
-        }
+        };
+
+        const updateIntersections = () => {
+            const {width, height} = chartSvg.getBoundingClientRect();
+            keys.forEach(key => lines[key].setIntersectionX(0.8, x0, x1, y0, y1,width, height));
+        };
 
         const updateYArea = () => {
             const { min, max } = minmax(
-                keys.map(key => (lines[key].visibility() ? getYBounds(key) : null)).filter(a => !!a)
+                keys.filter(key => lines[key].visibility()).map(key => getYBounds(key))
             );
 
             keys.forEach(key => {
                 lines[key].setYChartArea(min, max);
             });
+
+            y0 = min;
+            y1 = max;
+            updateIntersections();
         };
 
         const deepUpdateYArea = () => {
@@ -108,11 +117,16 @@ export default (data, title) => {
             setMapWindow(x0, x1);
         };
 
+
+
         const mount = () => {
             wrapper.insertBefore(mapNode, controls);
 
             keys.forEach(key => {
                 chartAreaXTransform.appendChild(lines[key].chartLineNode);
+
+                chartSvg.appendChild(lines[key].intersectionPoint);
+
                 appendBeforeOverlay(lines[key].mapLineNode);
                 controls.appendChild(
                     createCheckBox(colors[key], names[key], value => {

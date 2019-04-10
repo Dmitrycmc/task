@@ -1,20 +1,21 @@
 import { createElement, createSvgElement } from '../../helpers/elements';
+import './map.css';
 
 export default () => {
-    const mapSvg = createSvgElement('svg', {}, 'ctr_map-chart');
-    const map = createElement('ctr_map-container');
-    const svgWrapper = createElement('ctr_map-svg-wrapper');
+    const mapSvg = createSvgElement('svg', {}, 'map-chart');
+    const map = createElement('map-container');
+    const svgWrapper = createElement('map-svg-wrapper');
     const mapViewportTransform = createSvgElement('g');
 
     svgWrapper.appendChild(mapSvg);
     map.appendChild(svgWrapper);
     mapSvg.appendChild(mapViewportTransform);
 
-    const mapOverlayLeft = createSvgElement('rect', { x: 0, y: 0, width: 0, height: 1 }, 'crt_map-overlay');
-    const mapOverlayRight = createSvgElement('rect', { x: 1, y: 0, width: 0, height: 1 }, 'crt_map-overlay');
-    const mapWindow = createElement('crt_map-window', 'div');
-    const windowLeftEdge = createElement('crt_map-left-edge', 'div');
-    const windowRightEdge = createElement('crt_map-right-edge', 'div');
+    const mapOverlayLeft = createSvgElement('rect', { x: 0, y: 0, width: 0, height: 1 }, 'map-overlay');
+    const mapOverlayRight = createSvgElement('rect', { x: 1, y: 0, width: 0, height: 1 }, 'map-overlay');
+    const mapWindow = createElement('map-window', 'div');
+    const windowLeftEdge = createElement('map-left-edge', 'div');
+    const windowRightEdge = createElement('map-right-edge', 'div');
 
     mapViewportTransform.append(mapOverlayLeft);
     mapViewportTransform.append(mapOverlayRight);

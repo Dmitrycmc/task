@@ -16,14 +16,14 @@ export const boundBy = (x, left, right) => {
     return x;
 };
 
-export const calcYBounds = (xData, yData, x0, x1) => {
+export const relToAbs = (rel, a, b) => a + rel * (b - a);
+
+export const calcYBounds = (xData, yData, x0Rel, x1Rel) => {
     let i = 1;
     let j = xData.length - 1;
 
-    const xMin = xData[i];
-    const dx = xData[j] - xMin;
-    x0 = x0 * dx + xMin;
-    x1 = x1 * dx + xMin;
+    const x0 = relToAbs(x0Rel, xData[1], xData[j]);
+    const x1 = relToAbs(x1Rel, xData[1], xData[j]);
 
     while (xData[i] < x0) i++;
     while (xData[j] > x1) j--;
@@ -38,4 +38,13 @@ export const calcYBounds = (xData, yData, x0, x1) => {
     }
 
     return { y0: min, y1: max };
+};
+
+export const interpolate = (xData, yData, xRel) => {
+    const x = relToAbs(xRel, xData[1], xData[xData.length - 1]);
+    let i = 1;
+    while (xData[i] < x) i++;
+
+    const y = yData[i - 1] + ((x - xData[i - 1]) * (yData[i] - yData[i - 1])) / (xData[i] - xData[i - 1]);
+    return y;
 };
