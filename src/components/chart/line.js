@@ -25,6 +25,8 @@ const getLine = (xColumn, yColumn, stroke) => {
         'chart-line'
     );
 
+    const intersectionLineV = createSvgElement('line', { x1: 0, x2: 0, y0: 0, y1: 1, 'vector-effect': 'non-scaling-stroke' }, 'intersection-line');
+    const intersectionLineH = createSvgElement('line', { x1: -1, x2: 1, y0: 0, y1: 0, 'vector-effect': 'non-scaling-stroke' }, 'intersection-line');
     const intersectionPoint0 = createSvgElement('circle', { r: 5, stroke }, 'intersection-point');
     const intersectionPoint1 = createSvgElement('g', {}, '');
     const intersectionPoint2 = createSvgElement('g', {}, 'animated');
@@ -35,6 +37,8 @@ const getLine = (xColumn, yColumn, stroke) => {
     intersectionPoint2.appendChild(intersectionPoint1);
     intersectionPoint3.appendChild(intersectionPoint2);
     intersectionPoint4.appendChild(intersectionPoint3);
+    intersectionPoint5.appendChild(intersectionLineV);
+    intersectionPoint3.appendChild(intersectionLineH);
     intersectionPoint5.appendChild(intersectionPoint4);
 
     const mapLine = createSvgElement(
@@ -71,6 +75,12 @@ const getLine = (xColumn, yColumn, stroke) => {
 
     const setIntersectionX = (xRel, x0, x1, y0, y1, svgW, svgH) => {
         const x = absToRel(xRel, x0, x1);
+        if (x < 0 || x > 1) {
+            intersectionPoint5.style.display = 'none';
+            return;
+        }
+        intersectionPoint5.style.display = 'initial';
+
         const y = interpolate(xColumn, yColumn, xRel);
 
         intersectionPoint1.setAttribute('transform', `scale(${1 / svgW} ${1 / svgH})`);

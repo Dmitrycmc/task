@@ -50,3 +50,8 @@
     fill: white;
     stroke-width: 2.5px;
 }
+
+.intersection-line {
+    stroke: gray;
+    opacity: 0.2;
+}
