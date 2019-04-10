@@ -18,6 +18,8 @@ export const boundBy = (x, left, right) => {
 
 export const relToAbs = (rel, a, b) => a + rel * (b - a);
 
+export const absToRel = (abs, a, b) => (abs - a) / (b - a);
+
 export const calcYBounds = (xData, yData, x0Rel, x1Rel) => {
     let i = 1;
     let j = xData.length - 1;
@@ -47,4 +49,14 @@ export const interpolate = (xData, yData, xRel) => {
 
     const y = yData[i - 1] + ((x - xData[i - 1]) * (yData[i] - yData[i - 1])) / (xData[i] - xData[i - 1]);
     return y;
+};
+
+export const getColumns = (types, columns) => {
+    const xKey = Object.keys(types).filter(key => types[key] === 'x')[0];
+    const xColumn = columns.filter(column => column[0] === xKey)[0];
+
+    const keys = Object.keys(types).filter(key => types[key] !== 'x');
+    const yColumns = keys.reduce((obj, key) => ({ ...obj, [key]: columns.filter(column => column[0] === key)[0] }), {});
+
+    return { xColumn, yColumns, keys };
 };

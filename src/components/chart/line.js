@@ -1,5 +1,5 @@
 import { createSvgElement } from '../../helpers/elements';
-import {interpolate, relToAbs} from "../../helpers/utils";
+import {absToRel, interpolate, relToAbs} from '../../helpers/utils';
 
 const generatePoints = (x, y) => {
     const length = x.length;
@@ -25,13 +25,17 @@ const getLine = (xColumn, yColumn, stroke) => {
         'chart-line'
     );
 
-    const intersectionPoint = createSvgElement('circle', { r: 5, stroke }, 'intersection-point');
-    const intersectionPoint1 = createSvgElement('g', {}, 'animated');
-    const intersectionPoint2 = createSvgElement('g');
-    const intersectionPoint3 = createSvgElement('g', {}, 'animated');
-    intersectionPoint1.appendChild(intersectionPoint);
+    const intersectionPoint0 = createSvgElement('circle', { r: 5, stroke }, 'intersection-point');
+    const intersectionPoint1 = createSvgElement('g', {}, '');
+    const intersectionPoint2 = createSvgElement('g', {}, 'animated');
+    const intersectionPoint3 = createSvgElement('g', {}, '');
+    const intersectionPoint4 = createSvgElement('g', {}, 'animated');
+    const intersectionPoint5 = createSvgElement('g', {}, '');
+    intersectionPoint1.appendChild(intersectionPoint0);
     intersectionPoint2.appendChild(intersectionPoint1);
     intersectionPoint3.appendChild(intersectionPoint2);
+    intersectionPoint4.appendChild(intersectionPoint3);
+    intersectionPoint5.appendChild(intersectionPoint4);
 
     const mapLine = createSvgElement(
         'polyline',
@@ -66,12 +70,15 @@ const getLine = (xColumn, yColumn, stroke) => {
     };
 
     const setIntersectionX = (xRel, x0, x1, y0, y1, svgW, svgH) => {
-        const x = relToAbs(xRel, x0, x1);
-        const y = interpolate(xColumn, yColumn, x);
+        const x = absToRel(xRel, x0, x1);
+        const y = interpolate(xColumn, yColumn, xRel);
 
-        intersectionPoint1.setAttribute('transform', `scale(1 ${y1 - y0})`);
-        intersectionPoint2.setAttribute('transform', `translate(${xRel* svgW} ${y * svgH})`);
-        intersectionPoint3.setAttribute('transform', `scale(1 ${1/(y1 - y0)}) translate(0 ${-y0 * svgH})`);
+        intersectionPoint1.setAttribute('transform', `scale(${1 / svgW} ${1 / svgH})`);
+        intersectionPoint2.setAttribute('transform', `scale(1 ${y1 - y0})`);
+        intersectionPoint3.setAttribute('transform', `translate(0 ${y})`);
+        intersectionPoint4.setAttribute('transform', `scale(1 ${1 / (y1 - y0)}) translate(0 ${(-y0)})`);
+        intersectionPoint5.setAttribute('transform', `scale(${svgW} ${svgH}) translate(${x} 0) `);
+
     };
 
     const visibility = flag => {
@@ -81,7 +88,7 @@ const getLine = (xColumn, yColumn, stroke) => {
         } else {
             /* writing */
             visible = flag;
-            intersectionPoint.setAttribute('stroke', flag ? stroke : 'transparent');
+            intersectionPoint0.setAttribute('stroke', flag ? stroke : 'transparent');
             chartLine.setAttribute('stroke', flag ? stroke : 'transparent');
             mapLine.setAttribute('stroke', flag ? stroke : 'transparent');
         }
@@ -93,7 +100,7 @@ const getLine = (xColumn, yColumn, stroke) => {
         mapLineNode: mapAreaYTransform,
         setYMapArea,
         visibility,
-        intersectionPoint : intersectionPoint3,
+        intersectionPoint: intersectionPoint5,
         setIntersectionX
     };
 };
