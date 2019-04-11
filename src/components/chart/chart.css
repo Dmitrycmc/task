@@ -45,14 +45,13 @@
 }
 
 .intersection-point {
-    transition: stroke 0.5s;
+    transition: stroke 0.5s, fill 0.5s;
 
-    fill: white;
     stroke-width: 2.5px;
 }
 
 .intersection-line {
     opacity: 0.2;
 
-    stroke: gray;
+    transition: stroke 0.5s;
 }

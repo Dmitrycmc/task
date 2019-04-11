@@ -43,10 +43,10 @@ export const calcYBounds = (xData, yData, x0Rel, x1Rel) => {
 };
 
 export const interpolate = (xData, yData, xRel) => {
+    if (!xRel) return null;
     const x = relToAbs(xRel, xData[1], xData[xData.length - 1]);
     let i = 1;
     while (xData[i] < x) i++;
-
     const y = yData[i - 1] + ((x - xData[i - 1]) * (yData[i] - yData[i - 1])) / (xData[i] - xData[i - 1]);
     return y;
 };

@@ -1,6 +1,8 @@
 import { createSvgElement } from '../../helpers/elements';
 import { absToRel, interpolate } from '../../helpers/utils';
 
+const INTERSECTION_LINES_COLOR = 'gray';
+
 const generatePoints = (x, y) => {
     const length = x.length;
 
@@ -27,15 +29,15 @@ const getLine = (xColumn, yColumn, stroke) => {
 
     const intersectionLineV = createSvgElement(
         'line',
-        { x1: 0, x2: 0, y0: 0, y1: 1, 'vector-effect': 'non-scaling-stroke' },
+        { x1: 0, x2: 0, y0: 0, y1: 1, 'vector-effect': 'non-scaling-stroke', stroke: INTERSECTION_LINES_COLOR },
         'intersection-line'
     );
     const intersectionLineH = createSvgElement(
         'line',
-        { x1: -1, x2: 1, y0: 0, y1: 0, 'vector-effect': 'non-scaling-stroke' },
+        { x1: -1, x2: 1, y0: 0, y1: 0, 'vector-effect': 'non-scaling-stroke', stroke: INTERSECTION_LINES_COLOR },
         'intersection-line'
     );
-    const intersectionPoint0 = createSvgElement('circle', { r: 5, stroke }, 'intersection-point');
+    const intersectionPoint0 = createSvgElement('circle', { r: 5, stroke, fill: 'white' }, 'intersection-point');
     const intersectionPoint1 = createSvgElement('g', {}, '');
     const intersectionPoint2 = createSvgElement('g', {}, 'animated');
     const intersectionPoint3 = createSvgElement('g', {}, '');
@@ -43,10 +45,10 @@ const getLine = (xColumn, yColumn, stroke) => {
     const intersectionPoint5 = createSvgElement('g', {}, '');
     intersectionPoint1.appendChild(intersectionPoint0);
     intersectionPoint2.appendChild(intersectionPoint1);
+    intersectionPoint3.appendChild(intersectionLineH);
     intersectionPoint3.appendChild(intersectionPoint2);
     intersectionPoint4.appendChild(intersectionPoint3);
     intersectionPoint5.appendChild(intersectionLineV);
-    intersectionPoint3.appendChild(intersectionLineH);
     intersectionPoint5.appendChild(intersectionPoint4);
 
     const mapLine = createSvgElement(
@@ -106,8 +108,10 @@ const getLine = (xColumn, yColumn, stroke) => {
             /* writing */
             visible = flag;
             intersectionPoint0.setAttribute('stroke', flag ? stroke : 'transparent');
+            intersectionPoint0.setAttribute('fill', flag ? 'white' : 'transparent');
             chartLine.setAttribute('stroke', flag ? stroke : 'transparent');
             mapLine.setAttribute('stroke', flag ? stroke : 'transparent');
+            intersectionLineH.setAttribute('stroke', flag ? INTERSECTION_LINES_COLOR : 'transparent');
         }
     };
 

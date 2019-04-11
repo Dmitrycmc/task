@@ -2,8 +2,8 @@ import createCheckBox from '../check-box/check-box';
 import getLines from './line';
 import { createElement, createSvgElement } from '../../helpers/elements';
 import './chart.css';
-import { absToRel, boundBy, calcYBounds, getColumns, minmax } from '../../helpers/utils';
-import { addDragAndDropListeners, addListener } from '../../helpers/event-listeners';
+import { absToRel, boundBy, calcYBounds, getColumns, interpolate, minmax, relToAbs } from '../../helpers/utils';
+import { addDragAndDropListeners, addListener, removeListener } from '../../helpers/event-listeners';
 import createMap from '../map/map';
 import Tooltip from '../tooltip/tooltip';
 
@@ -21,6 +21,7 @@ export default (data, title) => {
     let y0 = 0;
     let y1 = 1;
     let mouseX = null;
+    let mouseXFixed = false;
 
     let keyToYBound = {};
     const getYBounds = key => keyToYBound[key] || (keyToYBound[key] = calcYBounds(xColumn, yColumns[key], x0, x1));
@@ -64,7 +65,22 @@ export default (data, title) => {
             const { width, height } = chartSvg.getBoundingClientRect();
             if (xRel !== undefined) mouseX = xRel;
 
-            tooltip.render('sdf', absToRel(mouseX, x0, x1));
+            const tooltipData =
+                mouseX &&
+                keys
+                    .filter(key => lines[key].visibility())
+                    .map(key => ({
+                        y: interpolate(xColumn, yColumns[key], mouseX),
+                        color: colors[key],
+                        name: names[key]
+                    }));
+            tooltip.render(
+                'sdf',
+                absToRel(mouseX, x0, x1),
+                relToAbs(mouseX, xColumn[1], xColumn[xColumn.length - 1]),
+                tooltipData
+            );
+
             keys.forEach(key => lines[key].setIntersectionX(mouseX, x0, x1, y0, y1, width, height));
         };
 
@@ -125,7 +141,7 @@ export default (data, title) => {
             keys.forEach(key => {
                 chartAreaXTransform.appendChild(lines[key].chartLineNode);
 
-                chartSvg.appendChild(lines[key].intersectionPoint);
+                chartSvg.insertBefore(lines[key].intersectionPoint, tooltip.transformY);
 
                 appendBeforeOverlay(lines[key].mapLineNode);
                 controls.appendChild(
@@ -167,8 +183,18 @@ export default (data, title) => {
             const right = getMapX(coords.x);
             updateXBounds(x0, boundBy(right, x0 + MIN_WIN_WIDTH, 1));
         });
-        addListener(chartSvg, 'mousemove', e => updateIntersections(x0 + (x1 - x0) * getChartX(e.clientX)));
+
+        const onMouseMove = e => updateIntersections(x0 + (x1 - x0) * getChartX(e.clientX));
+        addListener(chartSvg, 'mousemove', onMouseMove);
         addListener(chartSvg, 'touchmove', e => updateIntersections(x0 + (x1 - x0) * getChartX(e.touches[0].clientX)));
+        addListener(chartSvg, 'mousedown', () => {
+            if (mouseXFixed) {
+                addListener(chartSvg, 'mousemove', onMouseMove);
+            } else {
+                removeListener(chartSvg, 'mousemove', onMouseMove);
+            }
+            mouseXFixed = !mouseXFixed;
+        });
     };
 
     return {

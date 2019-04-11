@@ -1,9 +1,13 @@
 .tt_wrapper {
-    transition: transform 0.2s;
+    transition: transform 0.2s, opacity 0.2s;
 }
 
 .tt_rect {
     fill: white;
     stroke: gray;
 
+}
+
+.tt_bold {
+    font-weight: bold;
 }
