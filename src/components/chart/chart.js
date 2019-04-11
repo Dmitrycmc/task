@@ -2,9 +2,10 @@ import createCheckBox from '../check-box/check-box';
 import getLines from './line';
 import { createElement, createSvgElement } from '../../helpers/elements';
 import './chart.css';
-import { boundBy, calcYBounds, getColumns, minmax } from '../../helpers/utils';
+import { absToRel, boundBy, calcYBounds, getColumns, minmax } from '../../helpers/utils';
 import { addDragAndDropListeners, addListener } from '../../helpers/event-listeners';
 import createMap from '../map/map';
+import Tooltip from '../tooltip/tooltip';
 
 const MIN_WIN_WIDTH = 0.05;
 
@@ -38,7 +39,7 @@ export default (data, title) => {
     chartSvg.appendChild(chartViewportTransform);
     chartViewportTransform.appendChild(chartAreaXTransform);
     wrapper.appendChild(controls);
-
+    const tooltip = new Tooltip(chartSvg);
     const init = () => {
         const lines = getLines(keys, xColumn, yColumns, colors);
         const {
@@ -62,6 +63,8 @@ export default (data, title) => {
         const updateIntersections = xRel => {
             const { width, height } = chartSvg.getBoundingClientRect();
             if (xRel !== undefined) mouseX = xRel;
+
+            tooltip.render('sdf', absToRel(mouseX, x0, x1));
             keys.forEach(key => lines[key].setIntersectionX(mouseX, x0, x1, y0, y1, width, height));
         };
 
@@ -111,6 +114,7 @@ export default (data, title) => {
             setUserViewport(svgWidth, svgHeight);
             setMapViewport(mapWidth, mapHeight);
 
+            tooltip.resize();
             setMapWindow(x0, x1);
             updateIntersections();
         };

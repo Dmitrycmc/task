@@ -1,5 +1,5 @@
 import { createSvgElement } from '../../helpers/elements';
-import {absToRel, interpolate, relToAbs} from '../../helpers/utils';
+import { absToRel, interpolate } from '../../helpers/utils';
 
 const generatePoints = (x, y) => {
     const length = x.length;
@@ -25,8 +25,16 @@ const getLine = (xColumn, yColumn, stroke) => {
         'chart-line'
     );
 
-    const intersectionLineV = createSvgElement('line', { x1: 0, x2: 0, y0: 0, y1: 1, 'vector-effect': 'non-scaling-stroke' }, 'intersection-line');
-    const intersectionLineH = createSvgElement('line', { x1: -1, x2: 1, y0: 0, y1: 0, 'vector-effect': 'non-scaling-stroke' }, 'intersection-line');
+    const intersectionLineV = createSvgElement(
+        'line',
+        { x1: 0, x2: 0, y0: 0, y1: 1, 'vector-effect': 'non-scaling-stroke' },
+        'intersection-line'
+    );
+    const intersectionLineH = createSvgElement(
+        'line',
+        { x1: -1, x2: 1, y0: 0, y1: 0, 'vector-effect': 'non-scaling-stroke' },
+        'intersection-line'
+    );
     const intersectionPoint0 = createSvgElement('circle', { r: 5, stroke }, 'intersection-point');
     const intersectionPoint1 = createSvgElement('g', {}, '');
     const intersectionPoint2 = createSvgElement('g', {}, 'animated');
@@ -86,9 +94,8 @@ const getLine = (xColumn, yColumn, stroke) => {
         intersectionPoint1.setAttribute('transform', `scale(${1 / svgW} ${1 / svgH})`);
         intersectionPoint2.setAttribute('transform', `scale(1 ${y1 - y0})`);
         intersectionPoint3.setAttribute('transform', `translate(0 ${y})`);
-        intersectionPoint4.setAttribute('transform', `scale(1 ${1 / (y1 - y0)}) translate(0 ${(-y0)})`);
+        intersectionPoint4.setAttribute('transform', `scale(1 ${1 / (y1 - y0)}) translate(0 ${-y0})`);
         intersectionPoint5.setAttribute('transform', `scale(${svgW} ${svgH}) translate(${x} 0) `);
-
     };
 
     const visibility = flag => {

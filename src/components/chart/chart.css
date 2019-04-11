@@ -52,6 +52,7 @@
 }
 
 .intersection-line {
-    stroke: gray;
     opacity: 0.2;
+
+    stroke: gray;
 }
