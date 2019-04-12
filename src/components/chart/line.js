@@ -3,18 +3,18 @@ import { absToRel, findClosestIndex } from '../../helpers/utils';
 
 const INTERSECTION_LINES_COLOR = 'gray';
 
-const generatePoints = (x, y) => {
+const generatePoints = (area, x, y) => {
     const length = x.length;
 
     let xMin = x[1],
         dx = x[length - 1] - xMin;
-    let points = '' + 0 + ',' + y[1] + ' ';
+    let points = `0,${y[1]} `;
 
     for (let i = 2; i < length; i++) {
-        points += '' + (x[i] - xMin) / dx + ',' + y[i] + ' ';
+        points +=  `${(x[i] - xMin) / dx},${y[i]} `;
     }
 
-    return points;
+    return area ? `0,0 ${points} 1,0` : points;
 };
 
 export default class Line {
@@ -26,8 +26,10 @@ export default class Line {
         this._visible = val;
         this._intersectionPoint0.setAttribute('stroke', val ? this._color : 'transparent');
         this._intersectionPoint0.setAttribute('fill', val ? 'white' : 'transparent');
-        this._chartLine.setAttribute('stroke', val ? this._color : 'transparent');
-        this._mapLine.setAttribute('stroke', val ? this._color : 'transparent');
+        this._chartLine.setAttribute('stroke', val && !this._area ? this._color : 'transparent');
+        this._chartLine.setAttribute('fill', val && this._area ? this._color : 'transparent');
+        this._mapLine.setAttribute('stroke', val && !this._area ? this._color : 'transparent');
+        this._mapLine.setAttribute('fill', val && this._area ? this._color : 'transparent');
         this._intersectionLineH.setAttribute('stroke', val ? INTERSECTION_LINES_COLOR : 'transparent');
     }
 
@@ -39,21 +41,34 @@ export default class Line {
         this.node.setAttribute('transform', `scale(1 ${1 / (y1 - y0)}) translate(0 ${-y0})`);
     }
 
-    constructor(keys, xColumn, yColumn, color) {
+    constructor(area, keys, xColumn, yColumn, color) {
         this._visible = true;
         this._color = color;
         this._xColumn = xColumn;
         this._yColumn = yColumn;
+        this._area = area;
 
-        const points = generatePoints(xColumn, yColumn);
+        const points = generatePoints(area, xColumn, yColumn);
         this._chartLine = createSvgElement(
-            'polyline',
-            { 'stroke-linejoin': 'round', 'vector-effect': 'non-scaling-stroke', points, stroke: color },
+            area ? 'polygon' : 'polyline',
+            {
+                'stroke-linejoin': 'round',
+                'vector-effect': 'non-scaling-stroke',
+                points,
+                stroke: area ? 'none' : color,
+                fill: area ? color : 'none'
+            },
             'chart-line'
         );
         this._mapLine = createSvgElement(
             'polyline',
-            { 'stroke-linejoin': 'round', 'vector-effect': 'non-scaling-stroke', points, stroke: color },
+            {
+                'stroke-linejoin': 'round',
+                'vector-effect': 'non-scaling-stroke',
+                points,
+                stroke: area ? 'none' : color,
+                fill: area ? color : 'none'
+            },
             'map-line'
         );
 

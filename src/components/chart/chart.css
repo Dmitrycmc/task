@@ -27,17 +27,13 @@
 .chart-line {
     stroke-width: 2.5px;
 
-    transition: stroke 0.5s;
-
-    fill: none;
+    transition: stroke 0.5s, fill 0.5s;
 }
 
 .map-line {
     stroke-width: 1.5px;
 
-    transition: stroke 0.5s;
-
-    fill: none;
+    transition: stroke 0.5s, fill 0.5s;
 }
 
 .chart-bar {

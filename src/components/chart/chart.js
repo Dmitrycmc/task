@@ -1,7 +1,6 @@
 import createCheckBox from '../check-box/check-box';
 import Line from './line';
 import Bars from './bars';
-import Area from './area';
 import { createElement, createSvgElement } from '../../helpers/elements';
 import './chart.css';
 import { absToRel, boundBy, calcYBounds, findClosestIndex, getColumns, minmax } from '../../helpers/utils';
@@ -11,9 +10,9 @@ import Tooltip from '../tooltip/tooltip';
 import Grid from '../grid/grid';
 
 const typeToConstructor = {
-    line: Line,
-    bar: Bars,
-    area: Line
+    line: (...props) => new Line(false, ...props),
+    bar: (...props) => new Bars(...props),
+    area: (...props) => new Line(true, ...props)
 };
 
 const MIN_WIN_WIDTH = 0.05;
@@ -58,7 +57,7 @@ export default (data, title) => {
 
     const init = () => {
         const visualisation = keys
-            .map(key => ({ [key]: new typeToConstructor[types[key]](key, xColumn, yColumns[key], colors[key]) }))
+            .map(key => ({ [key]: typeToConstructor[types[key]](key, xColumn, yColumns[key], colors[key]) }))
             .reduce((obj, line) => Object.assign(obj, line), {});
 
         const {
