@@ -1,5 +1,6 @@
 import createCheckBox from '../check-box/check-box';
-import getLines from './line';
+import Line from './line';
+import Bars from './bars';
 import { createElement, createSvgElement } from '../../helpers/elements';
 import './chart.css';
 import { absToRel, boundBy, calcYBounds, getColumns, interpolate, minmax, relToAbs } from '../../helpers/utils';
@@ -45,7 +46,10 @@ export default (data, title) => {
     wrapper.appendChild(controls);
 
     const init = () => {
-        const lines = getLines(keys, xColumn, yColumns, colors);
+        const lines = keys
+            .map(key => ({ [key]: new Line(key, xColumn, yColumns[key], colors[key]) }))
+            .reduce((obj, line) => Object.assign(obj, line), {});
+
         const {
             mapNode,
             setMapViewport,
@@ -60,7 +64,7 @@ export default (data, title) => {
             const { min, max } = minmax(keys.map(key => getYBounds(key)));
 
             keys.forEach(key => {
-                lines[key].setYMapArea(min, max);
+                lines[key].yMapArea = [min, max];
             });
         };
 
@@ -71,14 +75,13 @@ export default (data, title) => {
             const tooltipData =
                 mouseX &&
                 keys
-                    .filter(key => lines[key].visibility())
+                    .filter(key => lines[key].visible)
                     .map(key => ({
                         y: interpolate(xColumn, yColumns[key], mouseX),
                         color: colors[key],
                         name: names[key]
                     }));
             tooltip.render(
-                'sdf',
                 absToRel(mouseX, x0, x1),
                 relToAbs(mouseX, xColumn[1], xColumn[xColumn.length - 1]),
                 tooltipData
@@ -88,10 +91,10 @@ export default (data, title) => {
         };
 
         const updateYArea = () => {
-            const { min, max } = minmax(keys.filter(key => lines[key].visibility()).map(key => getYBounds(key)));
+            const { min, max } = minmax(keys.filter(key => lines[key].visible).map(key => getYBounds(key)));
 
             keys.forEach(key => {
-                lines[key].setYChartArea(min, max);
+                lines[key].yChartArea = [min, max];
             });
 
             y0 = min;
@@ -135,14 +138,14 @@ export default (data, title) => {
             wrapper.insertBefore(mapNode, controls);
 
             keys.forEach(key => {
-                chartAreaXTransform.appendChild(lines[key].chartLineNode);
+                chartAreaXTransform.appendChild(lines[key].node);
 
                 chartSvg.insertBefore(lines[key].intersectionPoint, tooltip.transformY);
 
-                appendBeforeOverlay(lines[key].mapLineNode);
+                appendBeforeOverlay(lines[key].mapNode);
                 controls.appendChild(
                     createCheckBox(colors[key], names[key], value => {
-                        lines[key].visibility(value);
+                        lines[key].visible = value;
                         updateYArea();
                     })
                 );

@@ -32,7 +32,7 @@ export default class Tooltip {
         this.transformY.setAttribute('transform', `translate(0 ${svgBox.height})`);
     }
 
-    render(text, xRel, xAbs, data) {
+    render(xRel, xAbs, data) {
         if (!data || xRel < 0 || xRel > 1) {
             this.transformY.setAttribute('opacity', '0');
             return;

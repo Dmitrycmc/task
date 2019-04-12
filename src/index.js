@@ -25,20 +25,17 @@ root.appendChild(createFooter());
     init();
 });
 
-
 [data3].forEach(chartData => {
     const { node, init } = createChart(chartData, 'Chart #3');
     charts.appendChild(node);
     init();
 });
 
-
 [data4].forEach(chartData => {
     const { node, init } = createChart(chartData, 'Chart #4');
     charts.appendChild(node);
     init();
 });
-
 
 [data5].forEach(chartData => {
     const { node, init } = createChart(chartData, 'Chart #5');
