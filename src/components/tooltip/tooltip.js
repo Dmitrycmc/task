@@ -2,9 +2,9 @@ import { createSvgElement } from '../../helpers/elements';
 import './tooltip.css';
 import { tooltipDate } from '../../helpers/date-time';
 
-const MARGIN = 10;
+const MARGIN = 20;
 const PADDING = 10;
-const WIDTH = 200;
+const WIDTH = 180;
 const LINE_HEIGHT = 18;
 
 export default class Tooltip {
