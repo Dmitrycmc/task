@@ -4,16 +4,7 @@ import Bars from './bars';
 import Area from './area';
 import { createElement, createSvgElement } from '../../helpers/elements';
 import './chart.css';
-import {
-    absToRel,
-    boundBy,
-    calcYBounds,
-    findClosestIndex,
-    getColumns,
-    interpolate,
-    minmax,
-    relToAbs
-} from '../../helpers/utils';
+import { absToRel, boundBy, calcYBounds, findClosestIndex, getColumns, minmax } from '../../helpers/utils';
 import { addDragAndDropListeners, addListener, removeListener } from '../../helpers/event-listeners';
 import createMap from '../map/map';
 import Tooltip from '../tooltip/tooltip';
@@ -76,14 +67,6 @@ export default (data, title) => {
             mapWindow
         } = createMap();
 
-        const initYMapArea = () => {
-            const { min, max } = minmax(keys.map(key => getYBounds(key)));
-
-            keys.forEach(key => {
-                visualisation[key].yMapArea = [min, max];
-            });
-        };
-
         const updateIntersections = xRel => {
             const { width, height } = chartSvg.getBoundingClientRect();
             if (xRel !== undefined) xMouse = xRel;
@@ -101,7 +84,11 @@ export default (data, title) => {
                     }));
             tooltip.render(absToRel(xMouse, x0, x1), xColumn[i], tooltipData);
 
-            keys.forEach(key => visualisation[key].setIntersectionX(xMouse, x0, x1, y0, y1, width, height));
+            keys.forEach(
+                key =>
+                    visualisation[key].setIntersectionX &&
+                    visualisation[key].setIntersectionX(xMouse, x0, x1, y0, y1, width, height)
+            );
         };
 
         const updateYArea = () => {
@@ -109,6 +96,7 @@ export default (data, title) => {
 
             keys.forEach(key => {
                 visualisation[key].yChartArea = [min, max];
+                visualisation[key].yMapArea = [min, max];
             });
 
             y0 = min;
@@ -154,7 +142,8 @@ export default (data, title) => {
             keys.forEach(key => {
                 chartAreaXTransform.appendChild(visualisation[key].node);
 
-                chartSvg.insertBefore(visualisation[key].intersectionPoint, tooltip.transformY);
+                visualisation[key].intersectionPoint &&
+                    chartSvg.insertBefore(visualisation[key].intersectionPoint, tooltip.transformY);
 
                 appendBeforeOverlay(visualisation[key].mapNode);
                 controls.appendChild(
@@ -179,7 +168,6 @@ export default (data, title) => {
         };
 
         mount();
-        initYMapArea();
         deepUpdateYArea();
         onResize();
         addListener(window, 'resize', onResize);
