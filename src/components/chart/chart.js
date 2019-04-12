@@ -6,6 +6,7 @@ import { absToRel, boundBy, calcYBounds, getColumns, interpolate, minmax, relToA
 import { addDragAndDropListeners, addListener, removeListener } from '../../helpers/event-listeners';
 import createMap from '../map/map';
 import Tooltip from '../tooltip/tooltip';
+import Grid from '../grid/grid';
 
 const MIN_WIN_WIDTH = 0.05;
 
@@ -35,12 +36,14 @@ export default (data, title) => {
     const header = createElement();
     header.textContent = title;
 
+    let tooltip, grid;
+
     wrapper.appendChild(header);
     wrapper.appendChild(chartSvg);
     chartSvg.appendChild(chartViewportTransform);
     chartViewportTransform.appendChild(chartAreaXTransform);
     wrapper.appendChild(controls);
-    const tooltip = new Tooltip(chartSvg);
+
     const init = () => {
         const lines = getLines(keys, xColumn, yColumns, colors);
         const {
@@ -93,6 +96,7 @@ export default (data, title) => {
 
             y0 = min;
             y1 = max;
+            grid.render(x0, x1, y0, y1);
             updateIntersections();
         };
 
@@ -124,18 +128,10 @@ export default (data, title) => {
             updateIntersections();
         };
 
-        const onResize = () => {
-            const { width: svgWidth, height: svgHeight } = chartSvg.getBoundingClientRect();
-            const { width: mapWidth, height: mapHeight } = mapNode.getBoundingClientRect();
-            setUserViewport(svgWidth, svgHeight);
-            setMapViewport(mapWidth, mapHeight);
-
-            tooltip.resize();
-            setMapWindow(x0, x1);
-            updateIntersections();
-        };
-
         const mount = () => {
+            grid = new Grid(chartSvg);
+            tooltip = new Tooltip(chartSvg);
+
             wrapper.insertBefore(mapNode, controls);
 
             keys.forEach(key => {
@@ -151,6 +147,18 @@ export default (data, title) => {
                     })
                 );
             });
+        };
+
+        const onResize = () => {
+            const { width: svgWidth, height: svgHeight } = chartSvg.getBoundingClientRect();
+            const { width: mapWidth, height: mapHeight } = mapNode.getBoundingClientRect();
+            setUserViewport(svgWidth, svgHeight);
+            setMapViewport(mapWidth, mapHeight);
+
+            grid.resize();
+            tooltip.resize();
+            setMapWindow(x0, x1);
+            updateIntersections();
         };
 
         mount();

@@ -1,0 +1,11 @@
+.grid_line {
+    stroke: gray;
+}
+
+.grid_wrapper {
+    transition: transform 0.5s;
+}
+
+.grid_labels {
+
+}
