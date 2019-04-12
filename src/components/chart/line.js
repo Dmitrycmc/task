@@ -1,5 +1,5 @@
 import { createSvgElement } from '../../helpers/elements';
-import { absToRel, interpolate } from '../../helpers/utils';
+import { absToRel, findClosestIndex } from '../../helpers/utils';
 
 const INTERSECTION_LINES_COLOR = 'gray';
 
@@ -88,20 +88,25 @@ export default class Line {
         this.intersectionPoint.appendChild(intersectionPoint4);
 
         this.setIntersectionX = (xRel, x0, x1, y0, y1, svgW, svgH) => {
-            const x = absToRel(xRel, x0, x1);
+            let x = absToRel(xRel, x0, x1);
             if (x < 0 || x > 1) {
                 this.intersectionPoint.style.display = 'none';
                 return;
             }
             this.intersectionPoint.style.display = 'initial';
 
-            const y = interpolate(this._xColumn, this._yColumn, xRel);
+            const i = findClosestIndex(this._xColumn, xRel);
+            const y = this._yColumn[i];
+            x = absToRel(this._xColumn[i], this._xColumn[1], this._xColumn[this._xColumn.length - 1]);
 
             intersectionPoint1.setAttribute('transform', `scale(${1 / svgW} ${1 / svgH})`);
             intersectionPoint2.setAttribute('transform', `scale(1 ${y1 - y0})`);
             intersectionPoint3.setAttribute('transform', `translate(0 ${y})`);
             intersectionPoint4.setAttribute('transform', `scale(1 ${1 / (y1 - y0)}) translate(0 ${-y0})`);
-            this.intersectionPoint.setAttribute('transform', `scale(${svgW} ${svgH}) translate(${x} 0) `);
+            this.intersectionPoint.setAttribute(
+                'transform',
+                `scale(${svgW} ${svgH}) translate(${absToRel(x, x0, x1)} 0) `
+            );
         };
 
         this.mapNode = createSvgElement('g', {}, 'animated');

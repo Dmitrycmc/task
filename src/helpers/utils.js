@@ -42,6 +42,16 @@ export const calcYBounds = (xData, yData, x0Rel, x1Rel) => {
     return { y0: min, y1: max };
 };
 
+export const findClosestIndex = (xData, xRel) => {
+    if (!xRel) return null;
+    let x = relToAbs(xRel, xData[1], xData[xData.length - 1]);
+    let i = 1;
+    while (xData[i] < x) i++;
+    i = (xData[i - 1] + xData[i]) / 2 < x ? i : i - 1;
+
+    return i;
+};
+
 export const interpolate = (xData, yData, xRel) => {
     if (!xRel) return null;
     const x = relToAbs(xRel, xData[1], xData[xData.length - 1]);

@@ -1,6 +1,7 @@
 import createCheckBox from '../check-box/check-box';
 import Line from './line';
 import Bars from './bars';
+import Area from './area';
 import { createElement, createSvgElement } from '../../helpers/elements';
 import './chart.css';
 import { absToRel, boundBy, calcYBounds, getColumns, interpolate, minmax, relToAbs } from '../../helpers/utils';
@@ -8,6 +9,12 @@ import { addDragAndDropListeners, addListener, removeListener } from '../../help
 import createMap from '../map/map';
 import Tooltip from '../tooltip/tooltip';
 import Grid from '../grid/grid';
+
+const typeToConstructor = {
+    line: Line,
+    bar: Bars,
+    area: Line
+};
 
 const MIN_WIN_WIDTH = 0.05;
 
@@ -46,8 +53,8 @@ export default (data, title) => {
     wrapper.appendChild(controls);
 
     const init = () => {
-        const lines = keys
-            .map(key => ({ [key]: new Line(key, xColumn, yColumns[key], colors[key]) }))
+        const visualisation = keys
+            .map(key => ({ [key]: new typeToConstructor[types[key]](key, xColumn, yColumns[key], colors[key]) }))
             .reduce((obj, line) => Object.assign(obj, line), {});
 
         const {
@@ -64,7 +71,7 @@ export default (data, title) => {
             const { min, max } = minmax(keys.map(key => getYBounds(key)));
 
             keys.forEach(key => {
-                lines[key].yMapArea = [min, max];
+                visualisation[key].yMapArea = [min, max];
             });
         };
 
@@ -75,7 +82,7 @@ export default (data, title) => {
             const tooltipData =
                 mouseX &&
                 keys
-                    .filter(key => lines[key].visible)
+                    .filter(key => visualisation[key].visible)
                     .map(key => ({
                         y: interpolate(xColumn, yColumns[key], mouseX),
                         color: colors[key],
@@ -87,14 +94,14 @@ export default (data, title) => {
                 tooltipData
             );
 
-            keys.forEach(key => lines[key].setIntersectionX(mouseX, x0, x1, y0, y1, width, height));
+            keys.forEach(key => visualisation[key].setIntersectionX(mouseX, x0, x1, y0, y1, width, height));
         };
 
         const updateYArea = () => {
-            const { min, max } = minmax(keys.filter(key => lines[key].visible).map(key => getYBounds(key)));
+            const { min, max } = minmax(keys.filter(key => visualisation[key].visible).map(key => getYBounds(key)));
 
             keys.forEach(key => {
-                lines[key].yChartArea = [min, max];
+                visualisation[key].yChartArea = [min, max];
             });
 
             y0 = min;
@@ -138,14 +145,14 @@ export default (data, title) => {
             wrapper.insertBefore(mapNode, controls);
 
             keys.forEach(key => {
-                chartAreaXTransform.appendChild(lines[key].node);
+                chartAreaXTransform.appendChild(visualisation[key].node);
 
-                chartSvg.insertBefore(lines[key].intersectionPoint, tooltip.transformY);
+                chartSvg.insertBefore(visualisation[key].intersectionPoint, tooltip.transformY);
 
-                appendBeforeOverlay(lines[key].mapNode);
+                appendBeforeOverlay(visualisation[key].mapNode);
                 controls.appendChild(
                     createCheckBox(colors[key], names[key], value => {
-                        lines[key].visible = value;
+                        visualisation[key].visible = value;
                         updateYArea();
                     })
                 );
