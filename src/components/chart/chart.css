@@ -40,6 +40,14 @@
     fill: none;
 }
 
+.chart-bar {
+    transition: stroke 0.5s, fill 0.5s;
+}
+
+.map-bar {
+    transition: stroke 0.5s, fill 0.5s;
+}
+
 .animated {
     transition: transform 0.5s;
 }
