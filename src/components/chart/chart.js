@@ -21,7 +21,7 @@ const MIN_WIN_WIDTH = 0.05;
 export default (data, title) => {
     const chartSvg = createSvgElement('svg', {}, 'ctr_chart');
 
-    const { colors, names, types, columns } = data;
+    const { colors, names, types, columns, percentage, stacked, y_scaled: doubleY } = data;
 
     const { xColumn, yColumns, keys } = getColumns(types, columns);
 
@@ -34,9 +34,10 @@ export default (data, title) => {
 
     let keyToYBound = {};
     let keyToGlobalYBound = {};
-    const getYBounds = key => keyToYBound[key] || (keyToYBound[key] = calcYBounds(xColumn, yColumns[key], x0, x1));
+    const getYBounds = key =>
+        keyToYBound[key] || (keyToYBound[key] = calcYBounds(xColumn, yColumns[key], x0, x1, types[key]));
     const getGlobalYBounds = key =>
-        keyToGlobalYBound[key] || (keyToGlobalYBound[key] = calcYBounds(xColumn, yColumns[key], 0, 1));
+        keyToGlobalYBound[key] || (keyToGlobalYBound[key] = calcYBounds(xColumn, yColumns[key], 0, 1, types[key]));
     const resetYBoundsCash = () => (keyToYBound = {});
 
     const chartViewportTransform = createSvgElement('g');

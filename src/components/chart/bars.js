@@ -43,17 +43,17 @@ export default class Line {
         const points = generatePoints(xColumn, yColumn);
         this._chartLine = createSvgElement(
             'polygon',
-            { 'vector-effect': 'non-scaling-stroke', points, fill: color },
+            { 'vector-effect': 'non-scaling-stroke', points, 'stroke-width': 0, fill: color },
             'chart-bar'
         );
         this._selectedBar = createSvgElement(
             'rect',
-            { 'vector-effect': 'non-scaling-stroke', points: '', stroke: color, fill: color },
+            { 'vector-effect': 'non-scaling-stroke', points: '', 'stroke-width': 0, fill: color },
             'chart-bar'
         );
         this._mapLine = createSvgElement(
             'polygon',
-            { 'vector-effect': 'non-scaling-stroke', points, stroke: color, fill: color },
+            { 'vector-effect': 'non-scaling-stroke', points, 'stroke-width': 0, fill: color },
             'map-bar'
         );
 

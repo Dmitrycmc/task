@@ -52,27 +52,35 @@
 }
 
 .map-left-edge {
+    border-left-style: solid;
     border-radius: 10px 0 0 10px;
 }
 
 .map-right-edge {
+    border-right-style: solid;
     border-radius: 0 10px 10px 0;
 }
 
 .map-left-edge, .map-right-edge {
-
     position: absolute;
     top: -2px;
+
+    box-sizing: border-box;
 
     width: 10px;
     height: calc(3em + 4px);
 
+    border-width: 1px;
+    border-color: #fff;
+
     background-color: #c0d1e1;
 
-    transition: background 0.2s;
+    transition: background 0.2s, border-color 0.2s;
 }
 
 .night .map-left-edge,
 .night .map-right-edge {
+    border-color: rgb(86, 98, 109);
+
     background: rgb(86, 98, 109);
 }

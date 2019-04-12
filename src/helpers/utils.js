@@ -20,7 +20,7 @@ export const relToAbs = (rel, a, b) => a + rel * (b - a);
 
 export const absToRel = (abs, a, b) => (abs - a) / (b - a);
 
-export const calcYBounds = (xData, yData, x0Rel, x1Rel) => {
+export const calcYBounds = (xData, yData, x0Rel, x1Rel, type) => {
     let i = 1;
     let j = xData.length - 1;
 
@@ -39,7 +39,7 @@ export const calcYBounds = (xData, yData, x0Rel, x1Rel) => {
         max = Math.max(max, el);
     }
 
-    return { y0: min, y1: max };
+    return { y0: type === 'line' ? min : 0, y1: max };
 };
 
 export const findClosestIndex = (xData, xRel) => {
