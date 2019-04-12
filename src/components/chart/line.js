@@ -11,7 +11,7 @@ const generatePoints = (area, x, y) => {
     let points = `0,${y[1]} `;
 
     for (let i = 2; i < length; i++) {
-        points +=  `${(x[i] - xMin) / dx},${y[i]} `;
+        points += `${(x[i] - xMin) / dx},${y[i]} `;
     }
 
     return area ? `0,0 ${points} 1,0` : points;
@@ -24,12 +24,9 @@ export default class Line {
 
     set visible(val) {
         this._visible = val;
-        this._intersectionPoint0.setAttribute('stroke', val ? this._color : 'transparent');
-        this._intersectionPoint0.setAttribute('fill', val ? 'white' : 'transparent');
-        this._chartLine.setAttribute('stroke', val && !this._area ? this._color : 'transparent');
-        this._chartLine.setAttribute('fill', val && this._area ? this._color : 'transparent');
-        this._mapLine.setAttribute('stroke', val && !this._area ? this._color : 'transparent');
-        this._mapLine.setAttribute('fill', val && this._area ? this._color : 'transparent');
+        this._intersectionPoint0.setAttribute('opacity', +val);
+        this._chartLine.setAttribute('opacity', +val);
+        this._mapLine.setAttribute('opacity', +val);
         this._intersectionLineH.setAttribute('stroke', val ? INTERSECTION_LINES_COLOR : 'transparent');
     }
 
@@ -46,7 +43,6 @@ export default class Line {
         this._color = color;
         this._xColumn = xColumn;
         this._yColumn = yColumn;
-        this._area = area;
 
         const points = generatePoints(area, xColumn, yColumn);
         this._chartLine = createSvgElement(
