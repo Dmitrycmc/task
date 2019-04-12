@@ -43,7 +43,12 @@ export default class Line {
         const points = generatePoints(xColumn, yColumn);
         this._chartLine = createSvgElement(
             'polygon',
-            { 'vector-effect': 'non-scaling-stroke', points, stroke: color, fill: color },
+            { 'vector-effect': 'non-scaling-stroke', points, fill: color },
+            'chart-bar'
+        );
+        this._selectedBar = createSvgElement(
+            'rect',
+            { 'vector-effect': 'non-scaling-stroke', points: '', stroke: color, fill: color },
             'chart-bar'
         );
         this._mapLine = createSvgElement(
@@ -57,5 +62,22 @@ export default class Line {
 
         this.node = createSvgElement('g', {}, 'animated');
         this.node.appendChild(this._chartLine);
+        this.node.appendChild(this._selectedBar);
+    }
+
+    render(xMouse) {
+        if (!xMouse) {
+            this._chartLine.setAttribute('opacity', 1);
+            return;
+        }
+
+        const step = 1 / (this._xColumn.length - 1);
+        const i = Math.ceil(xMouse / step);
+        this._selectedBar.setAttribute('x', (i - 1) * step);
+        this._selectedBar.setAttribute('y', 0);
+        this._selectedBar.setAttribute('width', step);
+        this._selectedBar.setAttribute('height', this._yColumn[i]);
+
+        this._chartLine.setAttribute('opacity', 0.3);
     }
 }

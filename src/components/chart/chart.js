@@ -33,7 +33,10 @@ export default (data, title) => {
     let mouseXFixed = false;
 
     let keyToYBound = {};
+    let keyToGlobalYBound = {};
     const getYBounds = key => keyToYBound[key] || (keyToYBound[key] = calcYBounds(xColumn, yColumns[key], x0, x1));
+    const getGlobalYBounds = key =>
+        keyToGlobalYBound[key] || (keyToGlobalYBound[key] = calcYBounds(xColumn, yColumns[key], 0, 1));
     const resetYBoundsCash = () => (keyToYBound = {});
 
     const chartViewportTransform = createSvgElement('g');
@@ -69,7 +72,7 @@ export default (data, title) => {
 
         const updateIntersections = xRel => {
             const { width, height } = chartSvg.getBoundingClientRect();
-            if (xRel !== undefined) xMouse = xRel;
+            if (xRel !== -1) xMouse = xRel;
 
             const i = findClosestIndex(xColumn, xMouse);
 
@@ -84,25 +87,28 @@ export default (data, title) => {
                     }));
             tooltip.render(absToRel(xMouse, x0, x1), xColumn[i], tooltipData);
 
-            keys.forEach(
-                key =>
-                    visualisation[key].setIntersectionX &&
-                    visualisation[key].setIntersectionX(xMouse, x0, x1, y0, y1, width, height)
-            );
+            keys.forEach(key => {
+                visualisation[key].setIntersectionX &&
+                    visualisation[key].setIntersectionX(xMouse, x0, x1, y0, y1, width, height);
+                visualisation[key].render && visualisation[key].render(xMouse);
+            });
         };
 
         const updateYArea = () => {
             const { min, max } = minmax(keys.filter(key => visualisation[key].visible).map(key => getYBounds(key)));
+            const { min: globalMin, max: globalMax } = minmax(
+                keys.filter(key => visualisation[key].visible).map(key => getGlobalYBounds(key))
+            );
 
             keys.forEach(key => {
                 visualisation[key].yChartArea = [min, max];
-                visualisation[key].yMapArea = [min, max];
+                visualisation[key].yMapArea = [globalMin, globalMax];
             });
 
             y0 = min;
             y1 = max;
             grid.render(x0, x1, y0, y1);
-            updateIntersections();
+            updateIntersections(-1);
         };
 
         const deepUpdateYArea = () => {
@@ -130,7 +136,6 @@ export default (data, title) => {
             x1 = b;
             setXChartArea(x0, x1);
             setMapWindow(x0, x1);
-            updateIntersections();
         };
 
         const mount = () => {
@@ -198,7 +203,11 @@ export default (data, title) => {
         });
 
         const onMouseMove = e => updateIntersections(x0 + (x1 - x0) * getChartX(e.clientX));
+        const onMouseLeave = e => {
+            if (!mouseXFixed) updateIntersections();
+        };
         addListener(chartSvg, 'mousemove', onMouseMove);
+        addListener(chartSvg, 'mouseleave', onMouseLeave);
         addListener(chartSvg, 'touchmove', e => updateIntersections(x0 + (x1 - x0) * getChartX(e.touches[0].clientX)));
         addListener(chartSvg, 'mousedown', () => {
             if (mouseXFixed) {
