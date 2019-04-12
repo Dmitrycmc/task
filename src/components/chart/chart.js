@@ -4,7 +4,16 @@ import Bars from './bars';
 import Area from './area';
 import { createElement, createSvgElement } from '../../helpers/elements';
 import './chart.css';
-import { absToRel, boundBy, calcYBounds, getColumns, interpolate, minmax, relToAbs } from '../../helpers/utils';
+import {
+    absToRel,
+    boundBy,
+    calcYBounds,
+    findClosestIndex,
+    getColumns,
+    interpolate,
+    minmax,
+    relToAbs
+} from '../../helpers/utils';
 import { addDragAndDropListeners, addListener, removeListener } from '../../helpers/event-listeners';
 import createMap from '../map/map';
 import Tooltip from '../tooltip/tooltip';
@@ -29,7 +38,7 @@ export default (data, title) => {
     let x1 = 1;
     let y0 = 0;
     let y1 = 1;
-    let mouseX = null;
+    let xMouse = null;
     let mouseXFixed = false;
 
     let keyToYBound = {};
@@ -77,24 +86,22 @@ export default (data, title) => {
 
         const updateIntersections = xRel => {
             const { width, height } = chartSvg.getBoundingClientRect();
-            if (xRel !== undefined) mouseX = xRel;
+            if (xRel !== undefined) xMouse = xRel;
+
+            const i = findClosestIndex(xColumn, xMouse);
 
             const tooltipData =
-                mouseX &&
+                xMouse &&
                 keys
                     .filter(key => visualisation[key].visible)
                     .map(key => ({
-                        y: interpolate(xColumn, yColumns[key], mouseX),
+                        y: yColumns[key][i],
                         color: colors[key],
                         name: names[key]
                     }));
-            tooltip.render(
-                absToRel(mouseX, x0, x1),
-                relToAbs(mouseX, xColumn[1], xColumn[xColumn.length - 1]),
-                tooltipData
-            );
+            tooltip.render(absToRel(xMouse, x0, x1), xColumn[i], tooltipData);
 
-            keys.forEach(key => visualisation[key].setIntersectionX(mouseX, x0, x1, y0, y1, width, height));
+            keys.forEach(key => visualisation[key].setIntersectionX(xMouse, x0, x1, y0, y1, width, height));
         };
 
         const updateYArea = () => {
