@@ -110,5 +110,9 @@ const rgbToString = ({ r, g, b }) => `rgb(${r}, ${g}, ${b})`;
 export const mixColors = (c1, c2) => {
     const { r: r1, g: g1, b: b1 } = colorToGrb(c1);
     const { r: r2, g: g2, b: b2 } = colorToGrb(c2);
-    return rgbToString({ r: (r1 + r2) / 2, g: (g1 + g2) / 2, b: (b1 + b2) / 2 });
+    return rgbToString({
+        r: ((r1 + r2) / 2).toFixed(),
+        g: ((g1 + g2) / 2).toFixed(),
+        b: ((b1 + b2) / 2).toFixed()
+    });
 };

@@ -55,12 +55,12 @@ export default class Line {
         const points = generatePoints(xColumn, yColumn, yColumnBase);
         this._chartLine = createSvgElement(
             'polygon',
-            { 'vector-effect': 'non-scaling-stroke', points, 'stroke-width': 0 },
+            { 'vector-effect': 'non-scaling-stroke', points, 'stroke-width': 0, fill: color },
             'chart-bar'
         );
         this._selectedBar = createSvgElement(
             'rect',
-            { 'vector-effect': 'non-scaling-stroke', points: '', 'stroke-width': 0 },
+            { 'vector-effect': 'non-scaling-stroke', points: '', 'stroke-width': 0, fill: color },
             'chart-bar'
         );
         this._mapLine = createSvgElement(
