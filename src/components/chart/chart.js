@@ -22,7 +22,10 @@ export default (data, title) => {
 
     const { colors, names, types, columns, percentage, stacked, y_scaled: doubleY } = data;
 
-    const { xColumn, yColumns, keys } = getColumns(types, columns);
+    let { xColumn, yColumns, keys } = getColumns(types, columns);
+    yColumns = Object.entries(yColumns)
+        .map(([key, col]) => ({ [key]: col.map((el, i) => (i ? el / 1000 : el)) }))
+        .reduce((obj, q) => Object.assign(obj, q), {});
 
     let x0 = 0;
     let x1 = 1;
