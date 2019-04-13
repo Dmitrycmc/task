@@ -1,10 +1,10 @@
 import { createSvgElement } from '../../helpers/elements';
 import { absToRel, findClosestIndex } from '../../helpers/utils';
 
-const generatePoints = (area, x, y, yBase = []) => {
+const generatePoints = (area, x, y, yBase = [], yFull = []) => {
     const length = x.length;
 
-    const yVal = i => (yBase[i] || 0) + y[i];
+    const yVal = i => ((yBase[i] || 0) + y[i]) * (100 / yFull[i] || 1);
 
     let xMin = x[1],
         dx = x[length - 1] - xMin,
@@ -117,9 +117,9 @@ export default class Line {
         this.node.appendChild(this._chartLine);
     }
 
-    onChange = yColumnBase => {
+    onChange = (yColumnBase, yColumnFull) => {
         this._yColumnBase = yColumnBase;
-        const points = generatePoints(this._area, this._xColumn, this._yColumn, yColumnBase);
+        const points = generatePoints(this._area, this._xColumn, this._yColumn, yColumnBase, yColumnFull);
         this._chartLine.setAttribute('points', points);
         this._mapLine.setAttribute('points', points);
     };

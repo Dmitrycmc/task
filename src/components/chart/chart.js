@@ -100,9 +100,14 @@ export default (data, title) => {
 
         const updateYArea = () => {
             let yColumnSum = undefined;
+            let yColumnFull = undefined;
 
             keys.filter(key => visualisation[key].visible).forEach(key => {
-                visualisation[key].onChange(stacked ? yColumnSum : undefined);
+                yColumnFull = arrSum(yColumnFull, yColumns[key]);
+            });
+
+            keys.filter(key => visualisation[key].visible).forEach(key => {
+                visualisation[key].onChange(stacked ? yColumnSum : undefined, percentage ? yColumnFull : undefined);
                 yColumnSum = arrSum(yColumnSum, yColumns[key]);
             });
 
@@ -116,8 +121,8 @@ export default (data, title) => {
                 : minmax(keys.filter(key => visualisation[key].visible).map(key => getGlobalYBounds(key)));
 
             keys.forEach(key => {
-                visualisation[key].yChartArea = [min, max];
-                visualisation[key].yMapArea = [globalMin, globalMax];
+                visualisation[key].yChartArea = percentage ? [0, 100] : [min, max];
+                visualisation[key].yMapArea = percentage ? [0, 100] : [globalMin, globalMax];
             });
 
             y0 = min;
