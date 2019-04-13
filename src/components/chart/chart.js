@@ -99,10 +99,10 @@ export default (data, title) => {
         };
 
         const updateYArea = () => {
-            let yColumnSum = null;
+            let yColumnSum = undefined;
 
             keys.filter(key => visualisation[key].visible).forEach(key => {
-                visualisation[key].onChange(stacked ? yColumnSum : null);
+                visualisation[key].onChange(stacked ? yColumnSum : undefined);
                 yColumnSum = arrSum(yColumnSum, yColumns[key]);
             });
 

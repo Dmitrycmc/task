@@ -1,32 +1,20 @@
 import { createSvgElement } from '../../helpers/elements';
 import { absToRel, findClosestIndex } from '../../helpers/utils';
 
-const INTERSECTION_LINES_COLOR = 'gray';
-
-const generatePoints = (area, x, y, yBase) => {
+const generatePoints = (area, x, y, yBase = []) => {
     const length = x.length;
 
-    if (!yBase) {
-        let xMin = x[1],
-            dx = x[length - 1] - xMin;
-        let points = `0,${y[1]} `;
+    const yVal = i => (yBase[i] || 0) + y[i];
 
-        for (let i = 2; i < length; i++) {
-            points += `${(x[i] - xMin) / dx},${y[i]} `;
-        }
+    let xMin = x[1],
+        dx = x[length - 1] - xMin,
+        points = `0,${yVal(1)} `;
 
-        return area ? `0,0 ${points} 1,0` : points;
-    } else {
-        let xMin = x[1],
-            dx = x[length - 1] - xMin;
-        let points = `0,${yBase[1] + y[1]} `;
-
-        for (let i = 2; i < length; i++) {
-            points += `${(x[i] - xMin) / dx},${yBase[i] + y[i]} `;
-        }
-
-        return area ? `0,0 ${points} 1,0` : points;
+    for (let i = 2; i < length; i++) {
+        points += `${(x[i] - xMin) / dx},${yVal(i)} `;
     }
+
+    return area ? `0,0 ${points} 1,0` : points;
 };
 
 export default class Line {
@@ -36,10 +24,12 @@ export default class Line {
 
     set visible(val) {
         this._visible = val;
-        this._intersectionPoint0.setAttribute('opacity', +val);
+        if (!this._area) {
+            this._intersectionPoint0.setAttribute('opacity', +val);
+            this._intersectionLineH.setAttribute('opacity', +val);
+        }
         this._chartLine.setAttribute('opacity', +val);
         this._mapLine.setAttribute('opacity', +val);
-        this._intersectionLineH.setAttribute('stroke', val ? INTERSECTION_LINES_COLOR : 'transparent');
     }
 
     set yMapArea([y0, y1]) {
@@ -83,7 +73,7 @@ export default class Line {
 
         const intersectionLineV = createSvgElement(
             'line',
-            { x1: 0, x2: 0, y0: 0, y1: 1, 'vector-effect': 'non-scaling-stroke', stroke: INTERSECTION_LINES_COLOR },
+            { x1: 0, x2: 0, y0: 0, y1: 1, 'vector-effect': 'non-scaling-stroke' },
             'intersection-line'
         );
 
@@ -98,8 +88,7 @@ export default class Line {
                     x2: 1,
                     y0: 0,
                     y1: 0,
-                    'vector-effect': 'non-scaling-stroke',
-                    stroke: INTERSECTION_LINES_COLOR
+                    'vector-effect': 'non-scaling-stroke'
                 },
                 'intersection-line'
             );
