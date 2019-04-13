@@ -1,5 +1,5 @@
 import { createSvgElement } from '../../helpers/elements';
-import { mixColors } from '../../helpers/utils';
+import { calcOpacityColor } from '../../helpers/utils';
 
 const generatePoints = (x, y, yBase) => {
     // unused x
@@ -45,27 +45,25 @@ export default class Line {
         this.node.setAttribute('transform', `scale(1 ${1 / (y1 - y0)}) translate(0 ${-y0})`);
     }
 
-    constructor(keys, xColumn, yColumn, color, yColumnBase) {
+    constructor(keys, xColumn, yColumn, color) {
         this._visible = true;
         this._color = color;
         this._xColumn = xColumn;
         this._yColumn = yColumn;
-        this._yColumnBase = yColumnBase;
 
-        const points = generatePoints(xColumn, yColumn, yColumnBase);
         this._chartLine = createSvgElement(
             'polygon',
-            { 'vector-effect': 'non-scaling-stroke', points, 'stroke-width': 0, fill: color },
+            { 'vector-effect': 'non-scaling-stroke', 'stroke-width': 0, fill: color },
             'chart-bar'
         );
         this._selectedBar = createSvgElement(
             'rect',
-            { 'vector-effect': 'non-scaling-stroke', points: '', 'stroke-width': 0, fill: color },
+            { 'vector-effect': 'non-scaling-stroke', 'stroke-width': 0, fill: color },
             'chart-bar'
         );
         this._mapLine = createSvgElement(
             'polygon',
-            { 'vector-effect': 'non-scaling-stroke', points, 'stroke-width': 0, fill: color },
+            { 'vector-effect': 'non-scaling-stroke', 'stroke-width': 0, fill: color },
             'map-bar'
         );
 
@@ -77,21 +75,29 @@ export default class Line {
         this.node.appendChild(this._selectedBar);
     }
 
-    render(xMouse) {
+    onChange = yColumnBase => {
+        this._yColumnBase = yColumnBase;
+        const points = generatePoints(this._xColumn, this._yColumn, yColumnBase);
+        this._chartLine.setAttribute('points', points);
+        this._mapLine.setAttribute('points', points);
+    };
+
+    onMouseMove(xMouse) {
         if (!xMouse) {
             this._chartLine.setAttribute('fill', this._visible ? this._color : 'transparent');
             this._selectedBar.setAttribute('fill', 'transparent');
             return;
         }
 
-        const step = 1 / (this._xColumn.length - 1);
-        const i = Math.ceil(xMouse / step);
-        this._selectedBar.setAttribute('x', (i - 1) * step);
-        this._selectedBar.setAttribute('y', this._yColumnBase ? this._yColumnBase[i] : 0);
-        this._selectedBar.setAttribute('width', step);
-        this._selectedBar.setAttribute('height', this._yColumn[i]);
-        this._selectedBar.setAttribute('fill', this._color);
-
-        this._chartLine.setAttribute('fill', mixColors(this._color, '#fff'));
+        if (this._visible) {
+            const step = 1 / (this._xColumn.length - 1);
+            const i = Math.ceil(xMouse / step);
+            this._selectedBar.setAttribute('x', (i - 1) * step);
+            this._selectedBar.setAttribute('y', this._yColumnBase ? this._yColumnBase[i] : 0);
+            this._selectedBar.setAttribute('width', step);
+            this._selectedBar.setAttribute('height', this._yColumn[i]);
+            this._selectedBar.setAttribute('fill', this._color);
+            this._chartLine.setAttribute('fill', calcOpacityColor(this._color, '#fff', 0.6));
+        }
     }
 }

@@ -2,7 +2,7 @@ export const minmax = arr => {
     let min = null,
         max = null;
 
-    arr.forEach(({ y0, y1 }) => {
+    arr.forEach(({ min: y0, max: y1 }) => {
         min = min === null ? y0 : Math.min(min, y0);
         max = max === null ? y1 : Math.max(max, y1);
     });
@@ -39,7 +39,7 @@ export const calcYBounds = (xData, yData, x0Rel, x1Rel, type) => {
         max = Math.max(max, el);
     }
 
-    return { y0: type === 'line' ? min : 0, y1: max };
+    return { min: type === 'line' ? min : 0, max: max };
 };
 
 export const findClosestIndex = (xData, xRel) => {
@@ -52,6 +52,7 @@ export const findClosestIndex = (xData, xRel) => {
     return i;
 };
 
+/*
 export const interpolate = (xData, yData, xRel) => {
     if (!xRel) return null;
     const x = relToAbs(xRel, xData[1], xData[xData.length - 1]);
@@ -60,6 +61,7 @@ export const interpolate = (xData, yData, xRel) => {
     const y = yData[i - 1] + ((x - xData[i - 1]) * (yData[i] - yData[i - 1])) / (xData[i] - xData[i - 1]);
     return y;
 };
+*/
 
 export const getColumns = (types, columns) => {
     const xKey = Object.keys(types).filter(key => types[key] === 'x')[0];
@@ -107,12 +109,12 @@ const colorToGrb = c => {
 
 const rgbToString = ({ r, g, b }) => `rgb(${r}, ${g}, ${b})`;
 
-export const mixColors = (c1, c2) => {
+export const calcOpacityColor = (c1, c2, opacity) => {
     const { r: r1, g: g1, b: b1 } = colorToGrb(c1);
     const { r: r2, g: g2, b: b2 } = colorToGrb(c2);
     return rgbToString({
-        r: ((r1 + r2) / 2).toFixed(),
-        g: ((g1 + g2) / 2).toFixed(),
-        b: ((b1 + b2) / 2).toFixed()
+        r: (opacity * r1 + (1 - opacity) * r2).toFixed(),
+        g: (opacity * g1 + (1 - opacity) * g2).toFixed(),
+        b: (opacity * b1 + (1 - opacity) * b2).toFixed()
     });
 };

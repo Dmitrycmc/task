@@ -56,18 +56,11 @@ export default (data, title) => {
     wrapper.appendChild(controls);
 
     const init = () => {
-        let yColumnSum = null;
-
         const visualisation = keys
-            .map(key => {
-                const res = {
-                    [key]: typeToConstructor[types[key]](key, xColumn, yColumns[key], colors[key], yColumnSum)
-                };
-                if (stacked) {
-                    yColumnSum = arrSum(yColumnSum, yColumns[key]);
-                }
-                return res;
-            })
+            .reverse()
+            .map(key => ({
+                [key]: typeToConstructor[types[key]](key, xColumn, yColumns[key], colors[key])
+            }))
             .reduce((obj, line) => Object.assign(obj, line), {});
 
         const {
@@ -98,17 +91,26 @@ export default (data, title) => {
             tooltip.render(absToRel(xMouse, x0, x1), xColumn[i], tooltipData);
 
             keys.forEach(key => {
-                visualisation[key].setIntersectionX &&
-                    visualisation[key].setIntersectionX(xMouse, x0, x1, y0, y1, width, height);
-                visualisation[key].render && visualisation[key].render(xMouse);
+                visualisation[key].onMouseMove(xMouse, x0, x1, y0, y1, width, height);
             });
         };
 
         const updateYArea = () => {
-            const { min, max } = minmax(keys.filter(key => visualisation[key].visible).map(key => getYBounds(key)));
-            const { min: globalMin, max: globalMax } = minmax(
-                keys.filter(key => visualisation[key].visible).map(key => getGlobalYBounds(key))
-            );
+            let yColumnSum = null;
+
+            keys.filter(key => visualisation[key].visible).forEach(key => {
+                visualisation[key].onChange && visualisation[key].onChange(yColumnSum);
+                yColumnSum = arrSum(yColumnSum, yColumns[key]);
+            });
+
+            const { min, max } = stacked
+                ? calcYBounds(xColumn, yColumnSum, x0, x1, 'bar')
+                : minmax(keys.filter(key => visualisation[key].visible).map(key => getYBounds(key)));
+
+            // todo: need only one time
+            const { min: globalMin, max: globalMax } = stacked
+                ? calcYBounds(xColumn, yColumnSum, 0, 1, 'bar')
+                : minmax(keys.filter(key => visualisation[key].visible).map(key => getGlobalYBounds(key)));
 
             keys.forEach(key => {
                 visualisation[key].yChartArea = [min, max];
@@ -154,15 +156,18 @@ export default (data, title) => {
 
             wrapper.insertBefore(mapNode, controls);
 
-            keys.reverse().forEach(key => {
+            keys.forEach(key => {
                 chartAreaXTransform.appendChild(visualisation[key].node);
             });
 
             keys.forEach(key => {
+                appendBeforeOverlay(visualisation[key].mapNode);
+            });
+
+            keys.reverse().forEach(key => {
                 visualisation[key].intersectionPoint &&
                     chartSvg.insertBefore(visualisation[key].intersectionPoint, tooltip.transformY);
 
-                appendBeforeOverlay(visualisation[key].mapNode);
                 controls.appendChild(
                     createCheckBox(colors[key], names[key], value => {
                         visualisation[key].visible = value;
@@ -181,7 +186,7 @@ export default (data, title) => {
             grid.resize();
             tooltip.resize();
             setMapWindow(x0, x1);
-            updateIntersections();
+            updateIntersections(-1);
         };
 
         mount();
