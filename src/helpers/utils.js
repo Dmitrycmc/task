@@ -21,6 +21,8 @@ export const relToAbs = (rel, a, b) => a + rel * (b - a);
 export const absToRel = (abs, a, b) => (abs - a) / (b - a);
 
 export const calcYBounds = (xData, yData, x0Rel, x1Rel, type) => {
+    if (!yData) return { min: 0, max: 0 };
+
     let i = 1;
     let j = xData.length - 1;
 

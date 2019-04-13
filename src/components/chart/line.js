@@ -3,18 +3,30 @@ import { absToRel, findClosestIndex } from '../../helpers/utils';
 
 const INTERSECTION_LINES_COLOR = 'gray';
 
-const generatePoints = (area, x, y) => {
+const generatePoints = (area, x, y, yBase) => {
     const length = x.length;
 
-    let xMin = x[1],
-        dx = x[length - 1] - xMin;
-    let points = `0,${y[1]} `;
+    if (!yBase) {
+        let xMin = x[1],
+            dx = x[length - 1] - xMin;
+        let points = `0,${y[1]} `;
 
-    for (let i = 2; i < length; i++) {
-        points += `${(x[i] - xMin) / dx},${y[i]} `;
+        for (let i = 2; i < length; i++) {
+            points += `${(x[i] - xMin) / dx},${y[i]} `;
+        }
+
+        return area ? `0,0 ${points} 1,0` : points;
+    } else {
+        let xMin = x[1],
+            dx = x[length - 1] - xMin;
+        let points = `0,${yBase[1] + y[1]} `;
+
+        for (let i = 2; i < length; i++) {
+            points += `${(x[i] - xMin) / dx},${yBase[i] + y[i]} `;
+        }
+
+        return area ? `0,0 ${points} 1,0` : points;
     }
-
-    return area ? `0,0 ${points} 1,0` : points;
 };
 
 export default class Line {
@@ -43,6 +55,7 @@ export default class Line {
         this._color = color;
         this._xColumn = xColumn;
         this._yColumn = yColumn;
+        this._area = area;
 
         const points = generatePoints(area, xColumn, yColumn);
         this._chartLine = createSvgElement(
@@ -104,6 +117,13 @@ export default class Line {
         this.node = createSvgElement('g', {}, 'animated');
         this.node.appendChild(this._chartLine);
     }
+
+    onChange = yColumnBase => {
+        this._yColumnBase = yColumnBase;
+        const points = generatePoints(this._area, this._xColumn, this._yColumn, yColumnBase);
+        this._chartLine.setAttribute('points', points);
+        this._mapLine.setAttribute('points', points);
+    };
 
     onMouseMove(xRel, x0, x1, y0, y1, svgW, svgH) {
         let x = absToRel(xRel, x0, x1);

@@ -99,7 +99,7 @@ export default (data, title) => {
             let yColumnSum = null;
 
             keys.filter(key => visualisation[key].visible).forEach(key => {
-                visualisation[key].onChange && visualisation[key].onChange(yColumnSum);
+                visualisation[key].onChange(stacked ? yColumnSum : null);
                 yColumnSum = arrSum(yColumnSum, yColumns[key]);
             });
 
