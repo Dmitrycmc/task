@@ -70,3 +70,45 @@ export const getColumns = (types, columns) => {
 
     return { xColumn, yColumns, keys };
 };
+
+export const arrSum = (a, b) => {
+    if (!a) return [...b];
+    return a.map((el, i) => el + b[i]);
+};
+
+const colorToGrb = c => {
+    c = c.replace(/ /g, '');
+    if (c[0] === '#') {
+        if (c.length === 4) {
+            // #rgb
+            return {
+                r: parseInt(c[1] + c[1], 16),
+                g: parseInt(c[2] + c[2], 16),
+                b: parseInt(c[3] + c[3], 16)
+            };
+        } else {
+            // #rrggbb
+            return {
+                r: parseInt(c.slice(1, 3), 16),
+                g: parseInt(c.slice(3, 5), 16),
+                b: parseInt(c.slice(5, 7), 16)
+            };
+        }
+    } else {
+        // rgb(r,g,b)
+        const sdf = c.slice(4, -1).split(',');
+        return {
+            r: +sdf[0],
+            g: +sdf[1],
+            b: +sdf[2]
+        };
+    }
+};
+
+const rgbToString = ({ r, g, b }) => `rgb(${r}, ${g}, ${b})`;
+
+export const mixColors = (c1, c2) => {
+    const { r: r1, g: g1, b: b1 } = colorToGrb(c1);
+    const { r: r2, g: g2, b: b2 } = colorToGrb(c2);
+    return rgbToString({ r: (r1 + r2) / 2, g: (g1 + g2) / 2, b: (b1 + b2) / 2 });
+};

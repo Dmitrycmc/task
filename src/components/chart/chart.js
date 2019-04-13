@@ -3,7 +3,7 @@ import Line from './line';
 import Bars from './bars';
 import { createElement, createSvgElement } from '../../helpers/elements';
 import './chart.css';
-import { absToRel, boundBy, calcYBounds, findClosestIndex, getColumns, minmax } from '../../helpers/utils';
+import { absToRel, arrSum, boundBy, calcYBounds, findClosestIndex, getColumns, minmax } from '../../helpers/utils';
 import { addDragAndDropListeners, addListener, removeListener } from '../../helpers/event-listeners';
 import createMap from '../map/map';
 import Tooltip from '../tooltip/tooltip';
@@ -56,8 +56,18 @@ export default (data, title) => {
     wrapper.appendChild(controls);
 
     const init = () => {
+        let yColumnSum = null;
+
         const visualisation = keys
-            .map(key => ({ [key]: typeToConstructor[types[key]](key, xColumn, yColumns[key], colors[key]) }))
+            .map(key => {
+                const res = {
+                    [key]: typeToConstructor[types[key]](key, xColumn, yColumns[key], colors[key], yColumnSum)
+                };
+                if (stacked) {
+                    yColumnSum = arrSum(yColumnSum, yColumns[key]);
+                }
+                return res;
+            })
             .reduce((obj, line) => Object.assign(obj, line), {});
 
         const {
@@ -144,9 +154,11 @@ export default (data, title) => {
 
             wrapper.insertBefore(mapNode, controls);
 
-            keys.forEach(key => {
+            keys.reverse().forEach(key => {
                 chartAreaXTransform.appendChild(visualisation[key].node);
+            });
 
+            keys.forEach(key => {
                 visualisation[key].intersectionPoint &&
                     chartSvg.insertBefore(visualisation[key].intersectionPoint, tooltip.transformY);
 
@@ -203,7 +215,7 @@ export default (data, title) => {
         });
 
         const onMouseMove = e => updateIntersections(x0 + (x1 - x0) * getChartX(e.clientX));
-        const onMouseLeave = e => {
+        const onMouseLeave = () => {
             if (!mouseXFixed) updateIntersections();
         };
         addListener(chartSvg, 'mousemove', onMouseMove);

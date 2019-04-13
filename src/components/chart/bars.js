@@ -1,16 +1,29 @@
 import { createSvgElement } from '../../helpers/elements';
+import { mixColors } from '../../helpers/utils';
 
-const generatePoints = (x, y) => {
+const generatePoints = (x, y, yBase) => {
     // unused x
     const length = x.length - 1;
-    let points = `0,0 0,${y[1]} `;
 
-    for (let i = 2; i <= length; i++) {
-        points += `${(i - 1) / length},${y[i - 1]} ${(i - 1) / length},${y[i]} `;
+    if (!yBase) {
+        let points = `0,0 0,${y[1]} `;
+
+        for (let i = 2; i <= length; i++) {
+            points += `${(i - 1) / length},${y[i - 1]} ${(i - 1) / length},${y[i]} `;
+        }
+        points += `1,${y[length]} 1,0`;
+
+        return points;
+    } else {
+        let points = `0,0 0,${yBase[1] + y[1]} `;
+
+        for (let i = 2; i <= length; i++) {
+            points += `${(i - 1) / length},${yBase[i - 1] + y[i - 1]} ${(i - 1) / length},${yBase[i] + y[i]} `;
+        }
+        points += `1,${yBase[length] + y[length]} 1,0`;
+
+        return points;
     }
-    points += `1,${y[length]} 1,0`;
-
-    return points;
 };
 
 export default class Line {
@@ -20,9 +33,7 @@ export default class Line {
 
     set visible(val) {
         this._visible = val;
-        this._chartLine.setAttribute('stroke', val ? this._color : 'transparent');
         this._chartLine.setAttribute('fill', val ? this._color : 'transparent');
-        this._mapLine.setAttribute('stroke', val ? this._color : 'transparent');
         this._mapLine.setAttribute('fill', val ? this._color : 'transparent');
     }
 
@@ -34,21 +45,22 @@ export default class Line {
         this.node.setAttribute('transform', `scale(1 ${1 / (y1 - y0)}) translate(0 ${-y0})`);
     }
 
-    constructor(keys, xColumn, yColumn, color) {
+    constructor(keys, xColumn, yColumn, color, yColumnBase) {
         this._visible = true;
         this._color = color;
         this._xColumn = xColumn;
         this._yColumn = yColumn;
+        this._yColumnBase = yColumnBase;
 
-        const points = generatePoints(xColumn, yColumn);
+        const points = generatePoints(xColumn, yColumn, yColumnBase);
         this._chartLine = createSvgElement(
             'polygon',
-            { 'vector-effect': 'non-scaling-stroke', points, 'stroke-width': 0, fill: color },
+            { 'vector-effect': 'non-scaling-stroke', points, 'stroke-width': 0 },
             'chart-bar'
         );
         this._selectedBar = createSvgElement(
             'rect',
-            { 'vector-effect': 'non-scaling-stroke', points: '', 'stroke-width': 0, fill: color },
+            { 'vector-effect': 'non-scaling-stroke', points: '', 'stroke-width': 0 },
             'chart-bar'
         );
         this._mapLine = createSvgElement(
@@ -67,17 +79,19 @@ export default class Line {
 
     render(xMouse) {
         if (!xMouse) {
-            this._chartLine.setAttribute('opacity', 1);
+            this._chartLine.setAttribute('fill', this._visible ? this._color : 'transparent');
+            this._selectedBar.setAttribute('fill', 'transparent');
             return;
         }
 
         const step = 1 / (this._xColumn.length - 1);
         const i = Math.ceil(xMouse / step);
         this._selectedBar.setAttribute('x', (i - 1) * step);
-        this._selectedBar.setAttribute('y', 0);
+        this._selectedBar.setAttribute('y', this._yColumnBase ? this._yColumnBase[i] : 0);
         this._selectedBar.setAttribute('width', step);
         this._selectedBar.setAttribute('height', this._yColumn[i]);
+        this._selectedBar.setAttribute('fill', this._color);
 
-        this._chartLine.setAttribute('opacity', 0.3);
+        this._chartLine.setAttribute('fill', mixColors(this._color, '#fff'));
     }
 }

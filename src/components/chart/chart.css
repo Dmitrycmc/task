@@ -37,11 +37,11 @@
 }
 
 .chart-bar {
-    transition: opacity 0.5s;
+    transition: fill 0.5s;
 }
 
 .map-bar {
-    transition: opacity 0.5s;
+    transition: fill 0.5s;
 }
 
 .animated {
