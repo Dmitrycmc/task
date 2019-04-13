@@ -87,29 +87,39 @@ export default class Line {
             'intersection-line'
         );
 
-        this._intersectionLineH = createSvgElement(
-            'line',
-            { x1: -1, x2: 1, y0: 0, y1: 0, 'vector-effect': 'non-scaling-stroke', stroke: INTERSECTION_LINES_COLOR },
-            'intersection-line'
-        );
-
-        this._intersectionPoint0 = createSvgElement(
-            'circle',
-            { r: 5, stroke: color, fill: 'white' },
-            'intersection-point'
-        );
-        this._intersectionPoint1 = createSvgElement('g', {}, '');
-        this._intersectionPoint2 = createSvgElement('g', {}, 'animated');
-        this._intersectionPoint3 = createSvgElement('g', {}, '');
-        this._intersectionPoint4 = createSvgElement('g', {}, 'animated');
         this.intersectionPoint = createSvgElement('g', {}, '');
-        this._intersectionPoint1.appendChild(this._intersectionPoint0);
-        this._intersectionPoint2.appendChild(this._intersectionPoint1);
-        this._intersectionPoint3.appendChild(this._intersectionLineH);
-        this._intersectionPoint3.appendChild(this._intersectionPoint2);
-        this._intersectionPoint4.appendChild(this._intersectionPoint3);
         this.intersectionPoint.appendChild(intersectionLineV);
-        this.intersectionPoint.appendChild(this._intersectionPoint4);
+
+        if (!area) {
+            this._intersectionLineH = createSvgElement(
+                'line',
+                {
+                    x1: -1,
+                    x2: 1,
+                    y0: 0,
+                    y1: 0,
+                    'vector-effect': 'non-scaling-stroke',
+                    stroke: INTERSECTION_LINES_COLOR
+                },
+                'intersection-line'
+            );
+
+            this._intersectionPoint0 = createSvgElement(
+                'circle',
+                { r: 5, stroke: color, fill: 'white' },
+                'intersection-point'
+            );
+            this._intersectionPoint1 = createSvgElement('g', {}, '');
+            this._intersectionPoint2 = createSvgElement('g', {}, 'animated');
+            this._intersectionPoint3 = createSvgElement('g', {}, '');
+            this._intersectionPoint4 = createSvgElement('g', {}, 'animated');
+            this._intersectionPoint1.appendChild(this._intersectionPoint0);
+            this._intersectionPoint2.appendChild(this._intersectionPoint1);
+            this._intersectionPoint3.appendChild(this._intersectionLineH);
+            this._intersectionPoint3.appendChild(this._intersectionPoint2);
+            this._intersectionPoint4.appendChild(this._intersectionPoint3);
+            this.intersectionPoint.appendChild(this._intersectionPoint4);
+        }
 
         this.mapNode = createSvgElement('g', {}, 'animated');
         this.mapNode.appendChild(this._mapLine);
@@ -131,16 +141,19 @@ export default class Line {
             this.intersectionPoint.style.display = 'none';
             return;
         }
+
         this.intersectionPoint.style.display = 'initial';
-
         const i = findClosestIndex(this._xColumn, xRel);
-        const y = this._yColumn[i];
         x = absToRel(this._xColumn[i], this._xColumn[1], this._xColumn[this._xColumn.length - 1]);
-
-        this._intersectionPoint1.setAttribute('transform', `scale(${1 / svgW} ${1 / svgH})`);
-        this._intersectionPoint2.setAttribute('transform', `scale(1 ${y1 - y0})`);
-        this._intersectionPoint3.setAttribute('transform', `translate(0 ${y})`);
-        this._intersectionPoint4.setAttribute('transform', `scale(1 ${1 / (y1 - y0)}) translate(0 ${-y0})`);
         this.intersectionPoint.setAttribute('transform', `scale(${svgW} ${svgH}) translate(${absToRel(x, x0, x1)} 0) `);
+
+        if (!this._area) {
+            const y = this._yColumn[i];
+
+            this._intersectionPoint1.setAttribute('transform', `scale(${1 / svgW} ${1 / svgH})`);
+            this._intersectionPoint2.setAttribute('transform', `scale(1 ${y1 - y0})`);
+            this._intersectionPoint3.setAttribute('transform', `translate(0 ${y})`);
+            this._intersectionPoint4.setAttribute('transform', `scale(1 ${1 / (y1 - y0)}) translate(0 ${-y0})`);
+        }
     }
 }
