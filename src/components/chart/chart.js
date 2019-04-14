@@ -3,15 +3,7 @@ import Line from './line';
 import Bars from './bars';
 import { createElement, createSvgElement } from '../../helpers/elements';
 import './chart.css';
-import {
-    absToRel,
-    arrSum,
-    boundBy,
-    calcYBounds,
-    findClosestIndex,
-    minmax,
-    prepareData
-} from '../../helpers/utils';
+import { absToRel, arrSum, boundBy, calcYBounds, findClosestIndex, minmax, prepareData } from '../../helpers/utils';
 import { addDragAndDropListeners, addListener, removeListener } from '../../helpers/event-listeners';
 import createMap from '../map/map';
 import Tooltip from '../tooltip/tooltip';
@@ -93,7 +85,7 @@ export default (data, title) => {
             const { width, height } = chartSvg.getBoundingClientRect();
             if (xRel !== -1) xMouse = xRel;
 
-            const i = findClosestIndex(xColumn, xMouse);
+            const i = findClosestIndex(xColumn, xMouse, types.y0 === 'bar');
 
             const tooltipData =
                 xMouse &&

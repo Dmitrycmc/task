@@ -44,13 +44,16 @@ export const calcYBounds = (xData, yData, x0Rel, x1Rel, type) => {
     return [type === 'line' ? min : 0, max];
 };
 
-export const findClosestIndex = (xData, xRel) => {
+export const findClosestIndex = (xData, xRel, bars) => {
     if (!xRel) return null;
+    if (bars) {
+        return Math.floor(xRel * xData.length);
+    }
     let x = relToAbs(xRel, xData[0], xData[xData.length - 1]);
+
     let i = 1;
     while (xData[i] < x) i++;
     i = (xData[i - 1] + xData[i]) / 2 < x ? i : i - 1;
-
     return i;
 };
 
