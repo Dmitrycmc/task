@@ -10,7 +10,7 @@
     margin: 0;
     padding: 4vh 4vw;
 
-    scroll-snap-align: end;
+    scroll-snap-align: start;
 }
 
 .ctr_chart {

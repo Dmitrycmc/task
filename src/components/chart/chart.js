@@ -102,31 +102,36 @@ export default (data, title) => {
             let yColumnSum = undefined;
             let yColumnFull = undefined;
 
-            keys.filter(key => visualisation[key].visible).forEach(key => {
-                yColumnFull = arrSum(yColumnFull, yColumns[key]);
-            });
+            if (percentage) {
+                keys.filter(key => visualisation[key].visible).forEach(key => {
+                    yColumnFull = arrSum(yColumnFull, yColumns[key]);
+                });
+            }
 
             keys.filter(key => visualisation[key].visible).forEach(key => {
                 visualisation[key].onChange(stacked ? yColumnSum : undefined, percentage ? yColumnFull : undefined);
                 yColumnSum = arrSum(yColumnSum, yColumns[key]);
             });
 
-            const { min, max } = stacked
-                ? calcYBounds(xColumn, yColumnSum, x0, x1, 'bar')
-                : minmax(keys.filter(key => visualisation[key].visible).map(key => getYBounds(key)));
+            if (!percentage) {
+                var { min, max } = stacked
+                    ? calcYBounds(xColumn, yColumnSum, x0, x1, 'bar')
+                    : minmax(keys.filter(key => visualisation[key].visible).map(key => getYBounds(key)));
 
-            // todo: need only one time
-            const { min: globalMin, max: globalMax } = stacked
-                ? calcYBounds(xColumn, yColumnSum, 0, 1, 'bar')
-                : minmax(keys.filter(key => visualisation[key].visible).map(key => getGlobalYBounds(key)));
+                // todo: need only one time
+                var { min: globalMin, max: globalMax } = stacked
+                    ? calcYBounds(xColumn, yColumnSum, 0, 1, 'bar')
+                    : minmax(keys.filter(key => visualisation[key].visible).map(key => getGlobalYBounds(key)));
+
+                y0 = min;
+                y1 = max;
+            }
 
             keys.forEach(key => {
                 visualisation[key].yChartArea = percentage ? [0, 100] : [min, max];
                 visualisation[key].yMapArea = percentage ? [0, 100] : [globalMin, globalMax];
             });
 
-            y0 = min;
-            y1 = max;
             grid.render(x0, x1, y0, y1);
             updateIntersections(-1);
         };

@@ -35,6 +35,7 @@ export default class Line {
         this._visible = val;
         this._chartLine.setAttribute('fill', val ? this._color : 'transparent');
         this._mapLine.setAttribute('fill', val ? this._color : 'transparent');
+        this._selectedBar.setAttribute('fill', 'transparent');
     }
 
     set yMapArea([y0, y1]) {
