@@ -34,6 +34,8 @@
 
     border-color: #C0D1E1;
 
+    cursor: move;
+
     transition: border-color 0.2s;
 }
 
@@ -57,11 +59,15 @@
 .map-left-edge {
     border-left-style: solid;
     border-radius: 10px 0 0 10px;
+
+    cursor: w-resize;
 }
 
 .map-right-edge {
     border-right-style: solid;
     border-radius: 0 10px 10px 0;
+
+    cursor: e-resize;
 }
 
 .map-left-edge, .map-right-edge {
