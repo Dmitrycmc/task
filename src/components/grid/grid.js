@@ -4,7 +4,7 @@ import { absToRel, numberFormat, relToAbs } from '../../helpers/utils';
 import { dateFormat, DAY } from '../../helpers/date-time';
 
 const ROW_HEIGHT = 18 * 10;
-const COL_WIDTH = 18 * 20;
+const COL_WIDTH = 18 * 8;
 
 export default class Grid {
     constructor(parentNode) {
@@ -30,13 +30,13 @@ export default class Grid {
         const countH = width / COL_WIDTH;
 
         let i = 0;
-        while ((y1 - y0) / steps[i] < countV) i++;
-        const yStep = steps[i];
+        while ((y1 - y0) / ySteps[i] < countV) i++;
+        const yStep = ySteps[i];
 
         let j = 0;
         const len = xData.length - (bars ? 0 : 1);
-        while (((x1 - x0) * len) / steps[j] < countH) j++;
-        const xStep = steps[j] / len;
+        while (((x1 - x0) * len) / xSteps[j] < countH) j++;
+        const xStep = xSteps[j] / len;
 
         this.transform.setAttribute('transform', `scale(1 ${1 / (y1 - y0)}) translate(0 ${-y0})`);
 
@@ -96,7 +96,9 @@ export default class Grid {
     }
 }
 
-const steps = [
+const xSteps = [365, 180, 120, 60, 30, 15, 7, 3, 2, 1];
+
+const ySteps = [
     100000000,
     50000000,
     20000000,

@@ -97,6 +97,7 @@ export default (data, title) => {
                         name: names[key]
                     }));
             tooltip.render(absToRel(xMouse, x0, x1), xColumn[i], tooltipData, percentage, factor);
+            grid.render(x0, x1, y0, y1, factor, xColumn, types.y0 === 'bar', percentage);
 
             keys.forEach(key => {
                 visualisation[key].onMouseMove(xMouse, x0, x1, y0, y1, width, height);
@@ -139,7 +140,6 @@ export default (data, title) => {
                 visualisation[key].yMapArea = percentage ? [0, 100] : [globalMin, globalMax];
             });
 
-            grid.render(x0, x1, y0, y1, factor, xColumn, types.y0 === 'bar', percentage);
             updateIntersections(-1);
         };
 
