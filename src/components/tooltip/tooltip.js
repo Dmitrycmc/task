@@ -1,4 +1,4 @@
-import { createSvgElement } from '../../helpers/elements';
+import { clearChildren, createSvgElement } from '../../helpers/elements';
 import './tooltip.css';
 import { tooltipDate } from '../../helpers/date-time';
 
@@ -43,9 +43,7 @@ export default class Tooltip {
 
         const svgBox = this.transformY.parentNode.getBoundingClientRect();
 
-        while (this.text.childNodes.length) {
-            this.text.removeChild(this.text.childNodes[0]);
-        }
+        clearChildren(this.text);
 
         const xText = createSvgElement('tspan', {}, 'tt_bold');
         xText.textContent = tooltipDate(xAbs);

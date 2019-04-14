@@ -1,4 +1,4 @@
-import { createSvgElement } from '../../helpers/elements';
+import { clearChildren, createSvgElement } from '../../helpers/elements';
 import './grid.css';
 import { absToRel } from '../../helpers/utils';
 
@@ -10,7 +10,9 @@ export default class Grid {
         this.node = createSvgElement('g', {});
         this.transform = createSvgElement('g', {}, 'grid_wrapper');
 
+        this.labels = createSvgElement('g', { transform: 'scale (1 -1)' });
         parentNode.appendChild(this.node);
+        parentNode.appendChild(this.labels);
         this.node.appendChild(this.transform);
         this.resize();
     }
@@ -20,27 +22,27 @@ export default class Grid {
         this.node.setAttribute('transform', `scale(${width} ${height})`);
     }
 
-    render(x0, x1, y0, y1) {
+    render(x0, x1, y0, y1, unit) {
         const { height, width } = this.node.parentNode.getBoundingClientRect();
 
         const countV = height / ROW_HEIGHT;
         const countH = width / COL_WIDTH;
 
         let i = 0;
-        while ((y1 - y0) / sdf[i] < countV) i++;
-        const yStep = sdf[i];
+        while ((y1 - y0) / steps[i] < countV) i++;
+        const yStep = steps[i];
         let j = 0;
-        while ((x1 - x0) / sdf[j] < countH) j++;
-        const xStep = sdf[j];
+        while ((x1 - x0) / steps[j] < countH) j++;
+        const xStep = steps[j];
 
         this.transform.setAttribute('transform', `scale(1 ${1 / (y1 - y0)}) translate(0 ${-y0})`);
 
-        while (this.transform.childNodes.length) {
-            this.transform.removeChild(this.transform.childNodes[0]);
-        }
+        clearChildren(this.transform);
 
         i = Math.ceil(y0 / yStep);
         let yCur = i * yStep;
+
+        clearChildren(this.labels);
 
         while (yCur <= y1) {
             const line = createSvgElement(
@@ -49,6 +51,10 @@ export default class Grid {
                 'grid_line'
             );
             this.transform.appendChild(line);
+
+            const label = createSvgElement('text', { x: 0, y: -absToRel(yCur, y0, y1) * height });
+            label.textContent = yCur + (unit ? ' ' + unit : '');
+            this.labels.appendChild(label);
 
             yCur += yStep;
         }
@@ -75,7 +81,7 @@ export default class Grid {
     }
 }
 
-const sdf = [
+const steps = [
     100000000,
     50000000,
     20000000,

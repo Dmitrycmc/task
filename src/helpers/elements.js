@@ -16,3 +16,9 @@ export const createSvgElement = (tag, attrs, className) => {
     }
     return node;
 };
+
+export const clearChildren = el => {
+    while (el.childNodes.length) {
+        el.removeChild(el.childNodes[0]);
+    }
+};
