@@ -98,7 +98,7 @@ export default class Line {
             this._selectedBar.setAttribute('height', this._yColumn[i]);
             this._selectedBar.setAttribute('fill', this._color);
             const background = window.getComputedStyle(document.body).backgroundColor;
-            this._chartLine.setAttribute('fill', calcOpacityColor(this._color, background, 0.6));
+            this._chartLine.setAttribute('fill', calcOpacityColor(this._color, background, 0.5));
         }
     }
 }

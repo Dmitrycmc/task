@@ -55,6 +55,13 @@
 }
 
 .intersection-line {
-    stroke: #333;
-    stroke-width: 0.5;
+    opacity: 0.5;
+
+    transition: stroke 0.2s;
+
+    stroke: #182D3B;
+}
+
+.night .intersection-line {
+    stroke: #FFFFFF;
 }

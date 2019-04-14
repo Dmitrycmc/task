@@ -1,5 +1,13 @@
 .grid_line {
-    stroke: #3333;
+    opacity: 0.1;
+
+    transition: stroke 0.2s;
+
+    stroke: #182D3B;
+}
+
+.night .grid_line {
+    stroke: #FFFFFF;
 }
 
 .grid_wrapper {

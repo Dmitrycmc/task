@@ -219,7 +219,7 @@ export default (data, title) => {
             updateXBounds(boundBy(left, 0, 1 - width), boundBy(right, width, 1));
         });
         addDragAndDropListeners(windowLeftEdge, coords => {
-            const left = getMapX(coords.x + 10);
+            const left = getMapX(coords.x + 20);
             updateXBounds(boundBy(left, 0, x1 - MIN_WIN_WIDTH), x1);
         });
         addDragAndDropListeners(windowRightEdge, coords => {

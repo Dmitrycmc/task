@@ -17,7 +17,7 @@
 
     position: relative;
 
-    width: calc(100% - 20px);
+    width: calc(100% - 2 * 20px);
     height: 3em;
     margin-top: 20px;
 }
@@ -32,23 +32,26 @@
     border-width: 2px;
     border-style: solid none;
 
-    border-color: #c0d1e1;
+    border-color: #C0D1E1;
 
     transition: border-color 0.2s;
 }
 
 .night .map-window {
-    border-color: rgb(86, 98, 109);
+    border-color: #56626D;
 }
 
 .map-overlay {
+
+    opacity: 0.6;
+
     transition: fill 0.2s;
 
-    fill: rgba(230, 240, 250, 0.6);
+    fill: #E2EEF9;
 }
 
 .night .map-overlay {
-    fill: #41557099;
+    fill: #304259;
 }
 
 .map-left-edge {
@@ -67,20 +70,23 @@
 
     box-sizing: border-box;
 
-    width: 10px;
+    width: 20px;
     height: calc(3em + 4px);
 
     border-width: 1px;
     border-color: #fff;
 
-    background-color: #c0d1e1;
+    color: #888;
+    line-height: 52px;
+
+    background-color: #C0D1E1;
 
     transition: background 0.2s, border-color 0.2s;
 }
 
 .night .map-left-edge,
 .night .map-right-edge {
-    border-color: rgb(86, 98, 109);
+    border-color: #56626D;
 
-    background: rgb(86, 98, 109);
+    background: #56626D;
 }

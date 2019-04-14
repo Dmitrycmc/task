@@ -17,6 +17,7 @@ export default () => {
     const windowLeftEdge = createElement('map-left-edge', 'div');
     const windowRightEdge = createElement('map-right-edge', 'div');
 
+    windowLeftEdge.textContent = windowRightEdge.textContent = '|||';
     mapViewportTransform.append(mapOverlayLeft);
     mapViewportTransform.append(mapOverlayRight);
     map.append(mapWindow);
@@ -39,7 +40,7 @@ export default () => {
         const mapWidth = map.getBoundingClientRect().width;
         mapWindow.style.left = `${x0 * mapWidth}px`;
         mapWindow.style.width = `${(x1 - x0) * mapWidth}px`;
-        windowLeftEdge.style.left = `${x0 * mapWidth - 10}px`;
+        windowLeftEdge.style.left = `${x0 * mapWidth - 20}px`;
         windowRightEdge.style.left = `${x1 * mapWidth - 1}px`;
     };
 
