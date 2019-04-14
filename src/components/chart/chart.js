@@ -10,8 +10,7 @@ import {
     calcYBounds,
     findClosestIndex,
     minmax,
-    prepareData,
-    relToAbs
+    prepareData
 } from '../../helpers/utils';
 import { addDragAndDropListeners, addListener, removeListener } from '../../helpers/event-listeners';
 import createMap from '../map/map';
@@ -135,28 +134,18 @@ export default (data, title) => {
                 // todo: need only one time
                 var [globalMin, globalMax] = stacked
                     ? calcYBounds(xColumn, yColumnSum, 0, 1, 'bar')
+                    : doubleY
+                    ? globalYBounds.y0
                     : minmax(keys.filter(key => visualisation[key].visible).map(key => globalYBounds[key]));
 
                 y0 = min;
                 y1 = max;
             }
 
-            if (!doubleY) {
-                keys.forEach(key => {
-                    visualisation[key].yChartArea = percentage ? [0, 100] : [min, max];
-                    visualisation[key].yMapArea = percentage ? [0, 100] : [globalMin, globalMax];
-                });
-            } else {
-                const relBoundsList = keys.map(key =>
-                    getYBounds(key).map(bound => absToRel(bound, ...globalYBounds[key]))
-                );
-                const relBounds = minmax(relBoundsList);
-
-                visualisation[keys[0]].yChartArea = relBounds.map(bound => relToAbs(bound, ...globalYBounds[keys[0]]));
-                visualisation[keys[0]].yMapArea = globalYBounds[keys[0]];
-                visualisation[keys[1]].yChartArea = relBounds.map(bound => relToAbs(bound, ...globalYBounds[keys[1]]));
-                visualisation[keys[1]].yMapArea = globalYBounds[keys[1]];
-            }
+            keys.forEach(key => {
+                visualisation[key].yChartArea = percentage ? [0, 100] : [min, max];
+                visualisation[key].yMapArea = percentage ? [0, 100] : [globalMin, globalMax];
+            });
 
             grid.render(x0, x1, y0, y1);
             updateIntersections(-1);

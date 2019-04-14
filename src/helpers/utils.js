@@ -127,6 +127,7 @@ export const calcOpacityColor = (c1, c2, opacity) => {
 export const prepareData = data => {
     const { colors, names, types, columns, percentage, stacked, y_scaled: doubleY } = data;
 
+    var originY2;
     let globalYBounds = {};
     let { xColumn, yColumns, keys } = getColumns(types, columns);
 
@@ -152,5 +153,23 @@ export const prepareData = data => {
         globalYBounds[key] = globalYBounds[key].map(bound => bound / factor);
     });
 
-    return { colors, names, types, percentage, stacked, doubleY, xColumn, yColumns, keys, globalYBounds, unit };
+    if (doubleY) {
+        originY2 = yColumns.y1;
+        yColumns.y1 = yColumns.y1.map(el => relToAbs(absToRel(el, ...globalYBounds.y1), ...globalYBounds.y0));
+    }
+
+    return {
+        colors,
+        names,
+        types,
+        percentage,
+        stacked,
+        doubleY,
+        xColumn,
+        yColumns,
+        keys,
+        globalYBounds,
+        unit,
+        originY2
+    };
 };
