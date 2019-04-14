@@ -140,14 +140,11 @@ export const prepareData = data => {
 
     const globalMax = minmax(Object.values(globalYBounds))[1];
 
-    let unit = '',
-        factor = 1;
+    let factor = 1;
     if (globalMax > 1000000000) {
-        unit = 'M';
         factor = 1000000;
     }
     if (globalMax > 1000000) {
-        unit = 'K';
         factor = 1000;
     }
 
@@ -172,7 +169,25 @@ export const prepareData = data => {
         yColumns,
         keys,
         globalYBounds,
-        unit,
+        factor,
         originY2
     };
+};
+
+const roundNumber = n => {
+    const str = n.toFixed(3);
+    let i = str.length;
+    while (str[i - 1] === '0') i--;
+    if (str[i - 1] === '.') i--;
+    return i ? str.slice(0, i) : 0;
+};
+
+export const formatNumber = n => {
+    if (n >= 1000000000) {
+        return roundNumber(n / 1000000000) + ' B';
+    }
+    if (n >= 1000000) {
+        return roundNumber(n / 1000000) + ' M';
+    }
+    return roundNumber(n);
 };

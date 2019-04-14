@@ -1,6 +1,7 @@
 import { clearChildren, createSvgElement } from '../../helpers/elements';
 import './tooltip.css';
 import { tooltipDate } from '../../helpers/date-time';
+import { formatNumber } from '../../helpers/utils';
 
 const MARGIN = 20;
 const PADDING = 10;
@@ -32,7 +33,7 @@ export default class Tooltip {
         this.transformY.setAttribute('transform', `translate(0 ${svgBox.height})`);
     }
 
-    render(xRel, xAbs, data, percentage, unit) {
+    render(xRel, xAbs, data, percentage, factor) {
         if (!data || xRel < 0 || xRel > 1) {
             this.transformY.setAttribute('opacity', '0');
             return;
@@ -57,7 +58,7 @@ export default class Tooltip {
                 { fill: color, 'text-anchor': 'end', x: MARGIN + WIDTH - PADDING },
                 'tt_bold'
             );
-            yVal.textContent = percentage ? `${(100 * y).toFixed(2)}%` : y.toFixed() + (unit ? ' ' + unit : '');
+            yVal.textContent = percentage ? `${formatNumber(100 * y)} %` : formatNumber(y * factor);
             this.text.appendChild(yName);
             this.text.appendChild(yVal);
         });

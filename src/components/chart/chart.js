@@ -31,7 +31,7 @@ export default (data, title) => {
         yColumns,
         keys,
         globalYBounds,
-        unit
+        factor
     } = prepareData(data);
 
     let x0 = 0;
@@ -96,7 +96,7 @@ export default (data, title) => {
                         color: colors[key],
                         name: names[key]
                     }));
-            tooltip.render(absToRel(xMouse, x0, x1), xColumn[i], tooltipData, percentage, unit);
+            tooltip.render(absToRel(xMouse, x0, x1), xColumn[i], tooltipData, percentage, factor);
 
             keys.forEach(key => {
                 visualisation[key].onMouseMove(xMouse, x0, x1, y0, y1, width, height);
@@ -139,7 +139,7 @@ export default (data, title) => {
                 visualisation[key].yMapArea = percentage ? [0, 100] : [globalMin, globalMax];
             });
 
-            grid.render(x0, x1, y0, y1, unit);
+            grid.render(x0, x1, y0, y1, factor);
             updateIntersections(-1);
         };
 

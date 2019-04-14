@@ -1,6 +1,6 @@
 import { clearChildren, createSvgElement } from '../../helpers/elements';
 import './grid.css';
-import { absToRel } from '../../helpers/utils';
+import { absToRel, formatNumber } from '../../helpers/utils';
 
 const ROW_HEIGHT = 18 * 10;
 const COL_WIDTH = 18 * 10;
@@ -22,7 +22,7 @@ export default class Grid {
         this.node.setAttribute('transform', `scale(${width} ${height})`);
     }
 
-    render(x0, x1, y0, y1, unit) {
+    render(x0, x1, y0, y1, factor) {
         const { height, width } = this.node.parentNode.getBoundingClientRect();
 
         const countV = height / ROW_HEIGHT;
@@ -53,7 +53,7 @@ export default class Grid {
             this.transform.appendChild(line);
 
             const label = createSvgElement('text', { x: 0, y: -absToRel(yCur, y0, y1) * height });
-            label.textContent = yCur + (unit ? ' ' + unit : '');
+            label.textContent = formatNumber(yCur * factor);
             this.labels.appendChild(label);
 
             yCur += yStep;
