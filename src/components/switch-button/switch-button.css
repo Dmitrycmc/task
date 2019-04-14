@@ -1,8 +1,11 @@
 #btn-switch {
     display: inline-block;
 
+    padding-bottom: 30px;
+
     color: #108be3;
 
     cursor: pointer;
 
+    scroll-snap-align: end;
 }
