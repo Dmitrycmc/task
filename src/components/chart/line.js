@@ -6,11 +6,11 @@ const generatePoints = (area, x, y, yBase = [], yFull = []) => {
 
     const yVal = i => ((yBase[i] || 0) + y[i]) * (100 / yFull[i] || 1);
 
-    let xMin = x[1],
+    let xMin = x[0],
         dx = x[length - 1] - xMin,
-        points = `0,${yVal(1)} `;
+        points = `0,${yVal(0)} `;
 
-    for (let i = 2; i < length; i++) {
+    for (let i = 1; i < length; i++) {
         points += `${(x[i] - xMin) / dx},${yVal(i)} `;
     }
 
@@ -133,7 +133,7 @@ export default class Line {
 
         this.intersectionPoint.style.display = 'initial';
         const i = findClosestIndex(this._xColumn, xRel);
-        x = absToRel(this._xColumn[i], this._xColumn[1], this._xColumn[this._xColumn.length - 1]);
+        x = absToRel(this._xColumn[i], this._xColumn[0], this._xColumn[this._xColumn.length - 1]);
         this.intersectionPoint.setAttribute('transform', `scale(${svgW} ${svgH}) translate(${absToRel(x, x0, x1)} 0) `);
 
         if (!this._area) {

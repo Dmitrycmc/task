@@ -3,24 +3,24 @@ import { calcOpacityColor } from '../../helpers/utils';
 
 const generatePoints = (x, y, yBase) => {
     // unused x
-    const length = x.length - 1;
+    const length = x.length;
 
     if (!yBase) {
-        let points = `0,0 0,${y[1]} `;
+        let points = `0,0 0,${y[0]} `;
 
-        for (let i = 2; i <= length; i++) {
-            points += `${(i - 1) / length},${y[i - 1]} ${(i - 1) / length},${y[i]} `;
+        for (let i = 1; i < length; i++) {
+            points += `${i / length},${y[i - 1]} ${i / length},${y[i]} `;
         }
-        points += `1,${y[length]} 1,0`;
+        points += `1,${y[length - 1]} 1,0`;
 
         return points;
     } else {
-        let points = `0,0 0,${yBase[1] + y[1]} `;
+        let points = `0,0 0,${yBase[0] + y[0]} `;
 
-        for (let i = 2; i <= length; i++) {
-            points += `${(i - 1) / length},${yBase[i - 1] + y[i - 1]} ${(i - 1) / length},${yBase[i] + y[i]} `;
+        for (let i = 1; i < length; i++) {
+            points += `${i / length},${yBase[i - 1] + y[i - 1]} ${i / length},${yBase[i] + y[i]} `;
         }
-        points += `1,${yBase[length] + y[length]} 1,0`;
+        points += `1,${yBase[length - 1] + y[length - 1]} 1,0`;
 
         return points;
     }
@@ -91,12 +91,12 @@ export default class Line {
         }
 
         if (this._visible) {
-            const step = 1 / (this._xColumn.length - 1);
+            const step = 1 / this._xColumn.length;
             const i = Math.ceil(xMouse / step);
             this._selectedBar.setAttribute('x', (i - 1) * step);
-            this._selectedBar.setAttribute('y', this._yColumnBase ? this._yColumnBase[i] : 0);
+            this._selectedBar.setAttribute('y', this._yColumnBase ? this._yColumnBase[i - 1] : 0);
             this._selectedBar.setAttribute('width', step);
-            this._selectedBar.setAttribute('height', this._yColumn[i]);
+            this._selectedBar.setAttribute('height', this._yColumn[i - 1]);
             this._selectedBar.setAttribute('fill', this._color);
             const background = window.getComputedStyle(document.body).backgroundColor;
             this._chartLine.setAttribute('fill', calcOpacityColor(this._color, background, 0.5));

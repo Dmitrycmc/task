@@ -2,12 +2,12 @@ export const minmax = arr => {
     let min = null,
         max = null;
 
-    arr.forEach(({ min: y0, max: y1 }) => {
+    arr.forEach(([y0, y1]) => {
         min = min === null ? y0 : Math.min(min, y0);
         max = max === null ? y1 : Math.max(max, y1);
     });
 
-    return { min, max };
+    return [min, max];
 };
 
 export const boundBy = (x, left, right) => {
@@ -21,13 +21,13 @@ export const relToAbs = (rel, a, b) => a + rel * (b - a);
 export const absToRel = (abs, a, b) => (abs - a) / (b - a);
 
 export const calcYBounds = (xData, yData, x0Rel, x1Rel, type) => {
-    if (!yData) return { min: 0, max: 0 };
+    if (!yData) return [0, 0];
 
     let i = 1;
     let j = xData.length - 1;
 
-    const x0 = relToAbs(x0Rel, xData[1], xData[j]);
-    const x1 = relToAbs(x1Rel, xData[1], xData[j]);
+    const x0 = relToAbs(x0Rel, xData[0], xData[j]);
+    const x1 = relToAbs(x1Rel, xData[0], xData[j]);
 
     while (xData[i] < x0) i++;
     while (xData[j] > x1) j--;
@@ -41,12 +41,12 @@ export const calcYBounds = (xData, yData, x0Rel, x1Rel, type) => {
         max = Math.max(max, el);
     }
 
-    return { min: type === 'line' ? min : 0, max: max };
+    return [type === 'line' ? min : 0, max];
 };
 
 export const findClosestIndex = (xData, xRel) => {
     if (!xRel) return null;
-    let x = relToAbs(xRel, xData[1], xData[xData.length - 1]);
+    let x = relToAbs(xRel, xData[0], xData[xData.length - 1]);
     let i = 1;
     while (xData[i] < x) i++;
     i = (xData[i - 1] + xData[i]) / 2 < x ? i : i - 1;
@@ -57,7 +57,7 @@ export const findClosestIndex = (xData, xRel) => {
 /*
 export const interpolate = (xData, yData, xRel) => {
     if (!xRel) return null;
-    const x = relToAbs(xRel, xData[1], xData[xData.length - 1]);
+    const x = relToAbs(xRel, xData[0], xData[xData.length - 1]);
     let i = 1;
     while (xData[i] < x) i++;
     const y = yData[i - 1] + ((x - xData[i - 1]) * (yData[i] - yData[i - 1])) / (xData[i] - xData[i - 1]);
@@ -67,10 +67,13 @@ export const interpolate = (xData, yData, xRel) => {
 
 export const getColumns = (types, columns) => {
     const xKey = Object.keys(types).filter(key => types[key] === 'x')[0];
-    const xColumn = columns.filter(column => column[0] === xKey)[0];
+    const xColumn = columns.filter(column => column[0] === xKey)[0].slice(1);
 
     const keys = Object.keys(types).filter(key => types[key] !== 'x');
-    const yColumns = keys.reduce((obj, key) => ({ ...obj, [key]: columns.filter(column => column[0] === key)[0] }), {});
+    const yColumns = keys.reduce(
+        (obj, key) => ({ ...obj, [key]: columns.filter(column => column[0] === key)[0].slice(1) }),
+        {}
+    );
 
     return { xColumn, yColumns, keys };
 };
@@ -119,4 +122,19 @@ export const calcOpacityColor = (c1, c2, opacity) => {
         g: (opacity * g1 + (1 - opacity) * g2).toFixed(),
         b: (opacity * b1 + (1 - opacity) * b2).toFixed()
     });
+};
+
+export const prepareData = data => {
+    const { colors, names, types, columns, percentage, stacked, y_scaled: doubleY } = data;
+
+    let globalYBounds = {};
+    let { xColumn, yColumns, keys } = getColumns(types, columns);
+
+    yColumns = Object.entries(yColumns)
+        .map(([key, col]) => ({ [key]: col.map(el => el / 1000) }))
+        .reduce((obj, q) => Object.assign(obj, q), {});
+    keys.forEach(key => {
+        globalYBounds[key] = calcYBounds(xColumn, yColumns[key], 0, 1, types[key]);
+    });
+    return { colors, names, types, percentage, stacked, doubleY, xColumn, yColumns, keys, globalYBounds };
 };

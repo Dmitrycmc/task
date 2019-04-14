@@ -3,7 +3,7 @@ import Line from './line';
 import Bars from './bars';
 import { createElement, createSvgElement } from '../../helpers/elements';
 import './chart.css';
-import { absToRel, arrSum, boundBy, calcYBounds, findClosestIndex, getColumns, minmax } from '../../helpers/utils';
+import { absToRel, arrSum, boundBy, calcYBounds, findClosestIndex, minmax, prepareData } from '../../helpers/utils';
 import { addDragAndDropListeners, addListener, removeListener } from '../../helpers/event-listeners';
 import createMap from '../map/map';
 import Tooltip from '../tooltip/tooltip';
@@ -20,12 +20,9 @@ const MIN_WIN_WIDTH = 0.05;
 export default (data, title) => {
     const chartSvg = createSvgElement('svg', {}, 'ctr_chart');
 
-    const { colors, names, types, columns, percentage, stacked, y_scaled: doubleY } = data;
-
-    let { xColumn, yColumns, keys } = getColumns(types, columns);
-    yColumns = Object.entries(yColumns)
-        .map(([key, col]) => ({ [key]: col.map((el, i) => (i ? el / 1000 : el)) }))
-        .reduce((obj, q) => Object.assign(obj, q), {});
+    const { colors, names, types, percentage, stacked, doubleY, xColumn, yColumns, keys, globalYBounds } = prepareData(
+        data
+    );
 
     let x0 = 0;
     let x1 = 1;
@@ -35,11 +32,8 @@ export default (data, title) => {
     let mouseXFixed = false;
 
     let keyToYBound = {};
-    let keyToGlobalYBound = {};
     const getYBounds = key =>
         keyToYBound[key] || (keyToYBound[key] = calcYBounds(xColumn, yColumns[key], x0, x1, types[key]));
-    const getGlobalYBounds = key =>
-        keyToGlobalYBound[key] || (keyToGlobalYBound[key] = calcYBounds(xColumn, yColumns[key], 0, 1, types[key]));
     const resetYBoundsCash = () => (keyToYBound = {});
 
     const chartViewportTransform = createSvgElement('g');
@@ -91,7 +85,7 @@ export default (data, title) => {
                         color: colors[key],
                         name: names[key]
                     }));
-            tooltip.render(absToRel(xMouse, x0, x1), xColumn[i], tooltipData);
+            tooltip.render(absToRel(xMouse, x0, x1), xColumn[i], tooltipData, percentage);
 
             keys.forEach(key => {
                 visualisation[key].onMouseMove(xMouse, x0, x1, y0, y1, width, height);
@@ -110,18 +104,18 @@ export default (data, title) => {
 
             keys.filter(key => visualisation[key].visible).forEach(key => {
                 visualisation[key].onChange(stacked ? yColumnSum : undefined, percentage ? yColumnFull : undefined);
-                yColumnSum = arrSum(yColumnSum, yColumns[key]);
+                if (stacked) yColumnSum = arrSum(yColumnSum, yColumns[key]);
             });
 
             if (!percentage) {
-                var { min, max } = stacked
+                var [min, max] = stacked
                     ? calcYBounds(xColumn, yColumnSum, x0, x1, 'bar')
                     : minmax(keys.filter(key => visualisation[key].visible).map(key => getYBounds(key)));
 
                 // todo: need only one time
-                var { min: globalMin, max: globalMax } = stacked
+                var [globalMin, globalMax] = stacked
                     ? calcYBounds(xColumn, yColumnSum, 0, 1, 'bar')
-                    : minmax(keys.filter(key => visualisation[key].visible).map(key => getGlobalYBounds(key)));
+                    : minmax(keys.filter(key => visualisation[key].visible).map(key => globalYBounds[key]));
 
                 y0 = min;
                 y1 = max;

@@ -32,7 +32,7 @@ export default class Tooltip {
         this.transformY.setAttribute('transform', `translate(0 ${svgBox.height})`);
     }
 
-    render(xRel, xAbs, data) {
+    render(xRel, xAbs, data, percentage) {
         if (!data || xRel < 0 || xRel > 1) {
             this.transformY.setAttribute('opacity', '0');
             return;
@@ -59,7 +59,7 @@ export default class Tooltip {
                 { fill: color, 'text-anchor': 'end', x: MARGIN + WIDTH - PADDING },
                 'tt_bold'
             );
-            yVal.textContent = (+y).toFixed(2);
+            yVal.textContent = percentage ? `${(100 * y).toFixed(2)}%` : (+y).toFixed(2);
             this.text.appendChild(yName);
             this.text.appendChild(yVal);
         });
