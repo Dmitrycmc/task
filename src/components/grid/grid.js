@@ -1,9 +1,10 @@
 import { clearChildren, createSvgElement } from '../../helpers/elements';
 import './grid.css';
-import { absToRel, formatNumber } from '../../helpers/utils';
+import { absToRel, numberFormat, relToAbs } from '../../helpers/utils';
+import { dateFormat, DAY } from '../../helpers/date-time';
 
 const ROW_HEIGHT = 18 * 10;
-const COL_WIDTH = 18 * 10;
+const COL_WIDTH = 18 * 20;
 
 export default class Grid {
     constructor(parentNode) {
@@ -22,7 +23,7 @@ export default class Grid {
         this.node.setAttribute('transform', `scale(${width} ${height})`);
     }
 
-    render(x0, x1, y0, y1, factor) {
+    render(x0, x1, y0, y1, factor, xData, bars, percentage) {
         const { height, width } = this.node.parentNode.getBoundingClientRect();
 
         const countV = height / ROW_HEIGHT;
@@ -31,9 +32,11 @@ export default class Grid {
         let i = 0;
         while ((y1 - y0) / steps[i] < countV) i++;
         const yStep = steps[i];
+
         let j = 0;
-        while ((x1 - x0) / steps[j] < countH) j++;
-        const xStep = steps[j];
+        const len = xData.length - (bars ? 0 : 1);
+        while (((x1 - x0) * len) / steps[j] < countH) j++;
+        const xStep = steps[j] / len;
 
         this.transform.setAttribute('transform', `scale(1 ${1 / (y1 - y0)}) translate(0 ${-y0})`);
 
@@ -52,8 +55,12 @@ export default class Grid {
             );
             this.transform.appendChild(line);
 
-            const label = createSvgElement('text', { x: 0, y: -absToRel(yCur, y0, y1) * height });
-            label.textContent = formatNumber(yCur * factor);
+            const label = createSvgElement(
+                'text',
+                { 'alignment-baseline': 'middle', x: 0, y: -absToRel(yCur, y0, y1) * height },
+                'grid_labels'
+            );
+            label.textContent = numberFormat((percentage ? 100 : 1) * yCur * factor);
             this.labels.appendChild(label);
 
             yCur += yStep;
@@ -75,6 +82,14 @@ export default class Grid {
                 'grid_line'
             );
             this.transform.appendChild(line);
+
+            const label = createSvgElement(
+                'text',
+                { 'text-anchor': bars ? 'start' : 'middle', y: -10, x: absToRel(xCur, x0, x1) * width },
+                'grid_labels'
+            );
+            label.textContent = dateFormat(relToAbs(xCur, xData[0], xData[xData.length - 1] + DAY), false);
+            this.labels.appendChild(label);
 
             xCur += xStep;
         }

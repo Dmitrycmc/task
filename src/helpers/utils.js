@@ -182,7 +182,7 @@ const roundNumber = n => {
     return i ? str.slice(0, i) : 0;
 };
 
-export const formatNumber = n => {
+export const numberFormat = n => {
     if (n >= 1000000000) {
         return roundNumber(n / 1000000000) + ' B';
     }

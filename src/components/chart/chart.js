@@ -139,7 +139,7 @@ export default (data, title) => {
                 visualisation[key].yMapArea = percentage ? [0, 100] : [globalMin, globalMax];
             });
 
-            grid.render(x0, x1, y0, y1, factor);
+            grid.render(x0, x1, y0, y1, factor, xColumn, types.y0 === 'bar', percentage);
             updateIntersections(-1);
         };
 

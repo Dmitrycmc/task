@@ -15,5 +15,13 @@
 }
 
 .grid_labels {
+    transition: fill 0.2s;
 
+    fill: #242f3e;
+}
+
+.night .grid_labels {
+    opacity: 0.8;
+
+    fill: white;
 }

@@ -1,7 +1,7 @@
 import { clearChildren, createSvgElement } from '../../helpers/elements';
 import './tooltip.css';
-import { tooltipDate } from '../../helpers/date-time';
-import { formatNumber } from '../../helpers/utils';
+import { dateFormat } from '../../helpers/date-time';
+import { numberFormat } from '../../helpers/utils';
 
 const MARGIN = 20;
 const PADDING = 10;
@@ -47,7 +47,7 @@ export default class Tooltip {
         clearChildren(this.text);
 
         const xText = createSvgElement('tspan', {}, 'tt_bold');
-        xText.textContent = tooltipDate(xAbs);
+        xText.textContent = dateFormat(xAbs, true);
         this.text.appendChild(xText);
 
         data.forEach(({ y, color, name }) => {
@@ -58,7 +58,7 @@ export default class Tooltip {
                 { fill: color, 'text-anchor': 'end', x: MARGIN + WIDTH - PADDING },
                 'tt_bold'
             );
-            yVal.textContent = percentage ? `${formatNumber(100 * y)} %` : formatNumber(y * factor);
+            yVal.textContent = percentage ? `${numberFormat(100 * y)} %` : numberFormat(y * factor);
             this.text.appendChild(yName);
             this.text.appendChild(yVal);
         });
