@@ -130,11 +130,27 @@ export const prepareData = data => {
     let globalYBounds = {};
     let { xColumn, yColumns, keys } = getColumns(types, columns);
 
-    yColumns = Object.entries(yColumns)
-        .map(([key, col]) => ({ [key]: col.map(el => el / 1000) }))
-        .reduce((obj, q) => Object.assign(obj, q), {});
     keys.forEach(key => {
         globalYBounds[key] = calcYBounds(xColumn, yColumns[key], 0, 1, types[key]);
     });
-    return { colors, names, types, percentage, stacked, doubleY, xColumn, yColumns, keys, globalYBounds };
+
+    const globalMax = minmax(Object.values(globalYBounds))[1];
+
+    let unit = '',
+        factor = 1;
+    if (globalMax > 1000000000) {
+        unit = 'M';
+        factor = 1000000;
+    }
+    if (globalMax > 1000000) {
+        unit = 'K';
+        factor = 1000;
+    }
+
+    keys.forEach(key => {
+        yColumns[key] = yColumns[key].map(el => el / factor);
+        globalYBounds[key] = globalYBounds[key].map(bound => bound / factor);
+    });
+
+    return { colors, names, types, percentage, stacked, doubleY, xColumn, yColumns, keys, globalYBounds, unit };
 };

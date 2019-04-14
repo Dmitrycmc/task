@@ -3,7 +3,16 @@ import Line from './line';
 import Bars from './bars';
 import { createElement, createSvgElement } from '../../helpers/elements';
 import './chart.css';
-import { absToRel, arrSum, boundBy, calcYBounds, findClosestIndex, minmax, prepareData } from '../../helpers/utils';
+import {
+    absToRel,
+    arrSum,
+    boundBy,
+    calcYBounds,
+    findClosestIndex,
+    minmax,
+    prepareData,
+    relToAbs
+} from '../../helpers/utils';
 import { addDragAndDropListeners, addListener, removeListener } from '../../helpers/event-listeners';
 import createMap from '../map/map';
 import Tooltip from '../tooltip/tooltip';
@@ -20,9 +29,19 @@ const MIN_WIN_WIDTH = 0.05;
 export default (data, title) => {
     const chartSvg = createSvgElement('svg', {}, 'ctr_chart');
 
-    const { colors, names, types, percentage, stacked, doubleY, xColumn, yColumns, keys, globalYBounds } = prepareData(
-        data
-    );
+    const {
+        colors,
+        names,
+        types,
+        percentage,
+        stacked,
+        doubleY,
+        xColumn,
+        yColumns,
+        keys,
+        globalYBounds,
+        unit
+    } = prepareData(data);
 
     let x0 = 0;
     let x1 = 1;
@@ -30,6 +49,7 @@ export default (data, title) => {
     let y1 = 1;
     let xMouse = null;
     let mouseXFixed = false;
+    let yColumnFull = undefined;
 
     let keyToYBound = {};
     const getYBounds = key =>
@@ -81,11 +101,11 @@ export default (data, title) => {
                 keys
                     .filter(key => visualisation[key].visible)
                     .map(key => ({
-                        y: yColumns[key][i],
+                        y: yColumns[key][i] / (yColumnFull ? yColumnFull[i] : 1),
                         color: colors[key],
                         name: names[key]
                     }));
-            tooltip.render(absToRel(xMouse, x0, x1), xColumn[i], tooltipData, percentage);
+            tooltip.render(absToRel(xMouse, x0, x1), xColumn[i], tooltipData, percentage, unit);
 
             keys.forEach(key => {
                 visualisation[key].onMouseMove(xMouse, x0, x1, y0, y1, width, height);
@@ -94,7 +114,7 @@ export default (data, title) => {
 
         const updateYArea = () => {
             let yColumnSum = undefined;
-            let yColumnFull = undefined;
+            yColumnFull = undefined;
 
             if (percentage) {
                 keys.filter(key => visualisation[key].visible).forEach(key => {
@@ -121,10 +141,22 @@ export default (data, title) => {
                 y1 = max;
             }
 
-            keys.forEach(key => {
-                visualisation[key].yChartArea = percentage ? [0, 100] : [min, max];
-                visualisation[key].yMapArea = percentage ? [0, 100] : [globalMin, globalMax];
-            });
+            if (!doubleY) {
+                keys.forEach(key => {
+                    visualisation[key].yChartArea = percentage ? [0, 100] : [min, max];
+                    visualisation[key].yMapArea = percentage ? [0, 100] : [globalMin, globalMax];
+                });
+            } else {
+                const relBoundsList = keys.map(key =>
+                    getYBounds(key).map(bound => absToRel(bound, ...globalYBounds[key]))
+                );
+                const relBounds = minmax(relBoundsList);
+
+                visualisation[keys[0]].yChartArea = relBounds.map(bound => relToAbs(bound, ...globalYBounds[keys[0]]));
+                visualisation[keys[0]].yMapArea = globalYBounds[keys[0]];
+                visualisation[keys[1]].yChartArea = relBounds.map(bound => relToAbs(bound, ...globalYBounds[keys[1]]));
+                visualisation[keys[1]].yMapArea = globalYBounds[keys[1]];
+            }
 
             grid.render(x0, x1, y0, y1);
             updateIntersections(-1);
