@@ -3,16 +3,14 @@ import { createElement } from '../../helpers/elements';
 import { addListener } from '../../helpers/event-listeners';
 import createCheckIcon from '../icons/checkbox-icon';
 
-const uncheckedMark = 'cb_unchecked-mark';
-const checkedMark = 'cb_checked-mark';
-
 export default (color, text, onChange) => {
     let checked = true;
 
     const wrapper = createElement('cb_wrapper');
+    wrapper.style.backgroundColor = color;
+    wrapper.style.borderColor = color;
 
-    const mark = createElement(checkedMark);
-    mark.style.color = color;
+    const mark = createElement('mark');
 
     const label = createElement('cb_label');
     label.textContent = text;
@@ -25,7 +23,9 @@ export default (color, text, onChange) => {
     addListener(wrapper, 'click', () => {
         checked = !checked;
         onChange && onChange(checked);
-        mark.className = checked ? checkedMark : uncheckedMark;
+        wrapper.style.backgroundColor = checked ? color : 'transparent';
+        label.style.color = checked ? 'white' : color;
+        mark.style.opacity = +checked;
     });
 
     return wrapper;

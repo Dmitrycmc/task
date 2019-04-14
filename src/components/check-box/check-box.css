@@ -8,51 +8,38 @@
 
     margin: 5px;
 
-    border: 1px solid rgba(170, 170, 170, 85);
+    border-width: 1px;
+    border-style: solid;
+
     border-radius: 1em;
 
     cursor: pointer;
 
+    transition: background-color 0.5s;
 }
 
-.cb_unchecked-mark, .cb_checked-mark {
+.mark {
     box-sizing: border-box;
     width: 1.2em;
     height: 1.2em;
     margin: 0.4em;
-    overflow: hidden;
 
-    border: 1px solid currentColor;
     border-radius: 0.6em;
 
-    color: transparent;
-
-    transition: background-color 0.5s;
-}
-
-.cb_checked-mark {
-    background-color: currentColor;
-}
-
-.cb_checked-mark .icon {
-    top: 0;
+    transition: opacity 0.5s;
 }
 
 .cb_label {
     margin: 0.5em 0.5em 0.5em 0;
 
+    color: white;
     font-weight: normal;
+
+    transition: color 0.5s;
 }
 
 .icon {
-    position: relative;
-    top: -2em;
-
     width: 0.7em;
     height: 0.7em;
     margin: 0.2em;
-
-    color: inherit;
-
-    transition: top 0.5s;
 }
