@@ -1,6 +1,7 @@
 import { clearChildren, createSvgElement } from '../../helpers/elements';
 import './tooltip.css';
 import { dateFormat } from '../../helpers/date-time';
+import { addListener } from '../../helpers/event-listeners';
 import { numberFormat } from '../../helpers/utils';
 
 const MARGIN = 20;
@@ -13,21 +14,48 @@ export default class Tooltip {
         this.transformY = createSvgElement('g', {}, 'tt_wrapper');
         this.transformX = createSvgElement('g', {}, 'tt_wrapper');
 
+        const arrow = createSvgElement(
+            'polyline',
+            {
+                transform: `translate(${WIDTH + MARGIN - PADDING - 7} -${PADDING + MARGIN + 6})`,
+                'stroke-width': 2,
+                fill: 'none',
+                points: '0,0 5,-5 0,-10'
+            },
+            'tt_arrow'
+        );
+        const overlay = createSvgElement(
+            'polygon',
+            {
+                transform: `translate(${MARGIN} -${MARGIN})`,
+                x: 0,
+                y: 0,
+                fill: 'transparent',
+                points: `0,0 ${WIDTH},0 ${WIDTH},-30 0,-30`
+            },
+            'tt_overlay'
+        );
         this.rect = createSvgElement(
             'rect',
             { x: MARGIN, y: MARGIN, rx: 15, ry: 15, width: WIDTH, transform: 'scale(1 -1)' },
             'tt_rect'
         );
-        this.text = createSvgElement('text', {
-            x: MARGIN + PADDING,
-            y: MARGIN + PADDING + LINE_HEIGHT,
-            transform: 'scale(1 -1)'
-        });
+        this.text = createSvgElement(
+            'text',
+            {
+                x: MARGIN + PADDING,
+                y: MARGIN + PADDING + LINE_HEIGHT,
+                transform: 'scale(1 -1)'
+            },
+            'tt_text'
+        );
         this.transformY.appendChild(this.transformX);
         this.transformX.appendChild(this.rect);
-        this.transformX.appendChild(createSvgElement('polyline', {transform: `translate(${WIDTH + MARGIN - PADDING - 7} -${PADDING + MARGIN + 6})`, 'stroke-width': 2, fill: 'none', stroke: 'gray', points: "0,0 5,-5 0,-10"}));
+        this.transformX.appendChild(arrow);
         this.transformX.appendChild(this.text);
+        this.transformX.appendChild(overlay);
         parentNode.appendChild(this.transformY);
+        addListener(overlay, 'click', () => alert('+'));
     }
 
     resize() {
