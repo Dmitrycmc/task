@@ -23,7 +23,7 @@ export default class Grid {
         this.node.setAttribute('transform', `scale(${width} ${height})`);
     }
 
-    render(x0, x1, y0, y1, factor, xData, bars, percentage) {
+    render(x0, x1, y0, y1, factor, xData, colors, bars, percentage, convertPoint) {
         const { height, width } = this.node.parentNode.getBoundingClientRect();
 
         const countV = height / ROW_HEIGHT;
@@ -51,17 +51,41 @@ export default class Grid {
             const line = createSvgElement(
                 'line',
                 { x1: 0, x2: 1, y1: yCur, y2: yCur, 'vector-effect': 'non-scaling-stroke' },
-                'grid_line'
+                'grid_line '
             );
             this.transform.appendChild(line);
 
-            const label = createSvgElement(
+            let label;
+            label = createSvgElement(
                 'text',
-                { 'alignment-baseline': 'middle', x: 0, y: -absToRel(yCur, y0, y1) * height },
-                'grid_labels'
+                {
+                    fill: convertPoint ? colors.y0 : '',
+                    'alignment-baseline': 'middle',
+                    x: 0,
+                    y: -absToRel(yCur, y0, y1) * height
+                },
+                `grid_labels ${convertPoint ? '' : 'grid_labelsDefaultColor'}`
             );
             label.textContent = numberFormat((percentage ? 100 : 1) * yCur * factor);
             this.labels.appendChild(label);
+
+            if (convertPoint) {
+                label = createSvgElement(
+                    'text',
+                    {
+                        fill: colors.y1,
+                        'alignment-baseline': 'middle',
+                        'text-anchor': 'end',
+                        x: width,
+                        y: -absToRel(yCur, y0, y1) * height
+                    },
+                    `grid_labels`
+                );
+                label.textContent = numberFormat(
+                    (percentage ? 100 : 1) * (convertPoint ? convertPoint(yCur) : yCur) * factor
+                );
+                this.labels.appendChild(label);
+            }
 
             yCur += yStep;
         }
@@ -86,7 +110,7 @@ export default class Grid {
             const label = createSvgElement(
                 'text',
                 { 'text-anchor': bars ? 'start' : 'middle', y: -10, x: absToRel(xCur, x0, x1) * width },
-                'grid_labels'
+                `grid_labels grid_labelsDefaultColor`
             );
             label.textContent = dateFormat(relToAbs(xCur, xData[0], xData[xData.length - 1] + DAY), false);
             this.labels.appendChild(label);

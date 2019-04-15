@@ -3,7 +3,16 @@ import Line from './line';
 import Bars from './bars';
 import { createElement, createSvgElement } from '../../helpers/elements';
 import './chart.css';
-import { absToRel, arrSum, boundBy, calcYBounds, findClosestIndex, minmax, prepareData } from '../../helpers/utils';
+import {
+    absToRel,
+    arrSum,
+    boundBy,
+    calcYBounds,
+    findClosestIndex,
+    minmax,
+    prepareData,
+    relToAbs
+} from '../../helpers/utils';
 import { addDragAndDropListeners, addListener, removeListener } from '../../helpers/event-listeners';
 import createMap from '../map/map';
 import Tooltip from '../tooltip/tooltip';
@@ -87,17 +96,34 @@ export default (data, title) => {
 
             const i = findClosestIndex(xColumn, xMouse, types.y0 === 'bar');
 
+            const convertPoint = y0 => relToAbs(absToRel(y0, ...globalYBounds.y0), ...globalYBounds.y1);
+
             const tooltipData =
                 xMouse &&
                 keys
                     .filter(key => visualisation[key].visible)
-                    .map(key => ({
-                        y: yColumns[key][i] / (yColumnFull ? yColumnFull[i] : 1),
-                        color: colors[key],
-                        name: names[key]
-                    }));
+                    .map(key => {
+                        const y = yColumns[key][i] / (yColumnFull ? yColumnFull[i] : 1);
+                        return {
+                            y: key === 'y1' && doubleY ? convertPoint(y) : y,
+                            color: colors[key],
+                            name: names[key]
+                        };
+                    });
+
             tooltip.render(absToRel(xMouse, x0, x1), xColumn[i], tooltipData, percentage, factor);
-            grid.render(x0, x1, y0, y1, factor, xColumn, types.y0 === 'bar', percentage);
+            grid.render(
+                x0,
+                x1,
+                y0,
+                y1,
+                factor,
+                xColumn,
+                colors,
+                types.y0 === 'bar',
+                percentage,
+                doubleY && convertPoint
+            );
 
             keys.forEach(key => {
                 visualisation[key].onMouseMove(xMouse, x0, x1, y0, y1, width, height);

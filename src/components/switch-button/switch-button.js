@@ -13,13 +13,13 @@ export default () => {
 
     const switchToNight = () => {
         btn.textContent = nightLabel;
-        document.body.className = 'night';
+        document.body.classList.toggle('night');
         night = true;
     };
 
     const switchToDay = () => {
         btn.textContent = dayLabel;
-        document.body.className = '';
+        document.body.classList.toggle('night');
         night = false;
     };
 
