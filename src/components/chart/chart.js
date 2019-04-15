@@ -210,16 +210,26 @@ export default (data, title) => {
                 appendBeforeOverlay(visualisation[key].mapNode);
             });
 
+            const toggleCheckBoxes = {};
+
             keys.reverse().forEach(key => {
                 visualisation[key].intersectionPoint &&
                     chartSvg.insertBefore(visualisation[key].intersectionPoint, tooltip.transformY);
 
-                controls.appendChild(
-                    createCheckBox(colors[key], names[key], value => {
+                const { node: cb, toggle } = createCheckBox(
+                    colors[key],
+                    names[key],
+                    value => {
                         visualisation[key].visible = value;
                         updateYArea();
-                    })
+                    },
+                    () => {
+                        keys.forEach(innerKey => toggleCheckBoxes[innerKey](innerKey === key));
+                    }
                 );
+                toggleCheckBoxes[key] = toggle;
+
+                controls.appendChild(cb);
             });
         };
 

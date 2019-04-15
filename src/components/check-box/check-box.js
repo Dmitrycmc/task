@@ -1,9 +1,9 @@
 import './check-box.css';
 import { createElement } from '../../helpers/elements';
-import { addListener } from '../../helpers/event-listeners';
+import { addListener, removeListener } from '../../helpers/event-listeners';
 import createCheckIcon from '../icons/checkbox-icon';
 
-export default (color, text, onChange) => {
+export default (color, text, onChange, onClear) => {
     let checked = true;
 
     const wrapper = createElement('cb_wrapper');
@@ -20,13 +20,31 @@ export default (color, text, onChange) => {
 
     mark.appendChild(createCheckIcon());
 
-    addListener(wrapper, 'click', () => {
-        checked = !checked;
+    const toggle = flag => {
+        checked = flag === undefined ? !checked : flag;
         onChange && onChange(checked);
         wrapper.style.backgroundColor = checked ? color : 'transparent';
         label.style.color = checked ? 'white' : color;
         mark.style.opacity = +checked;
-    });
+    };
 
-    return wrapper;
+    let timeoutId = null;
+    const clear = () => {
+        onClear && onClear();
+        removeListener(wrapper, 'touchend', onEndHolding);
+        removeListener(wrapper, 'mouseup', onEndHolding);
+    };
+    const onStartHolding = () => {
+        timeoutId = setTimeout(clear, 1000);
+        addListener(wrapper, 'touchend', onEndHolding);
+        addListener(wrapper, 'mouseup', onEndHolding);
+    };
+    const onEndHolding = () => {
+        clearTimeout(timeoutId);
+        toggle();
+    };
+    addListener(wrapper, 'touchstart', onStartHolding);
+    addListener(wrapper, 'mousedown', onStartHolding);
+
+    return { node: wrapper, toggle };
 };
