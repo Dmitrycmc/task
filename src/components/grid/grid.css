@@ -11,7 +11,7 @@
 }
 
 .grid_wrapper {
-    transition: transform 0.5s;
+    transition: transform 0.2s;
 }
 
 .grid_labels {

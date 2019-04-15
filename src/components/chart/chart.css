@@ -50,29 +50,29 @@
 .chart-line {
     stroke-width: 1.5px;
 
-    transition: opacity 0.5s;
+    transition: opacity 0.2s;
 }
 
 .map-line {
     stroke-width: 1px;
 
-    transition: opacity 0.5s;
+    transition: opacity 0.2s;
 }
 
 .chart-bar {
-    transition: fill 0.5s;
+    transition: fill 0.2s;
 }
 
 .map-bar {
-    transition: fill 0.5s;
+    transition: fill 0.2s;
 }
 
 .animated {
-    transition: transform 0.5s;
+    transition: transform 0.2s;
 }
 
 .intersection-point {
-    transition: opacity 0.5s;
+    transition: opacity 0.2s;
 
     stroke-width: 2.5px;
 }
