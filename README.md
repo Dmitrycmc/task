@@ -1,3 +1,1 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
-
-The aim is to track work time and write spent time into your task manager.
+Project on Github: https://github.com/Dmitrycmc/task
