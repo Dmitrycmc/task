@@ -132,7 +132,9 @@ export default (data, titleText) => {
                 colors,
                 types.y0 === 'bar',
                 percentage,
-                doubleY && convertPoint
+                doubleY && convertPoint,
+                visualisation.y0 && visualisation.y0.visible,
+                visualisation.y1 && visualisation.y1.visible
             );
 
             keys.forEach(key => {

@@ -23,7 +23,7 @@ export default class Grid {
         this.node.setAttribute('transform', `scale(${width} ${height})`);
     }
 
-    render(x0, x1, y0, y1, factor, xData, colors, bars, percentage, convertPoint) {
+    render(x0, x1, y0, y1, factor, xData, colors, bars, percentage, convertPoint, show0, show1) {
         const { height, width } = this.node.parentNode.getBoundingClientRect();
 
         const countV = height / ROW_HEIGHT;
@@ -56,20 +56,23 @@ export default class Grid {
             this.transform.appendChild(line);
 
             let label;
-            label = createSvgElement(
-                'text',
-                {
-                    fill: convertPoint ? colors.y0 : '',
-                    'alignment-baseline': 'middle',
-                    x: 0,
-                    y: -absToRel(yCur, y0, y1) * height
-                },
-                `grid_labels ${convertPoint ? '' : 'grid_labelsDefaultColor'}`
-            );
-            label.textContent = numberFormat((percentage ? 100 : 1) * yCur * factor);
-            this.labels.appendChild(label);
 
-            if (convertPoint) {
+            if (!convertPoint || show0) {
+                label = createSvgElement(
+                    'text',
+                    {
+                        fill: convertPoint ? colors.y0 : '',
+                        'alignment-baseline': 'middle',
+                        x: 0,
+                        y: -absToRel(yCur, y0, y1) * height
+                    },
+                    `grid_labels ${convertPoint ? '' : 'grid_labelsDefaultColor'}`
+                );
+                label.textContent = numberFormat((percentage ? 100 : 1) * yCur * factor);
+                this.labels.appendChild(label);
+            }
+
+            if (convertPoint && show1) {
                 label = createSvgElement(
                     'text',
                     {
