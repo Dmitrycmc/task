@@ -19,9 +19,11 @@ margin: 0;
   user-select: none;
 }
 
+/*
 .desktop {
   scroll-snap-type: y mandatory;
 }
+*/
 
 .night {
   color: white;

@@ -22,6 +22,8 @@ let dataPromise = new Promise(e => e());
         });
 });
 
+/*
 if (!window.orientation) {
     document.body.classList.toggle('desktop');
 }
+*/

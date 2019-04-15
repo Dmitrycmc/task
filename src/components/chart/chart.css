@@ -11,9 +11,11 @@
     padding: 4vh 4vw;
 }
 
+/*
 .desktop .crt_wrapper {
     scroll-snap-align: start;
 }
+*/
 
 .ctr_chart {
     flex-grow: 1;
