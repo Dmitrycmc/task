@@ -82,6 +82,10 @@ export default (data, titleText) => {
     chartViewportTransform.appendChild(chartAreaXTransform);
     wrapper.appendChild(controls);
 
+    const noData = createElement('no-data');
+    noData.textContent = 'NO DATA';
+    wrapper.appendChild(noData);
+
     const init = () => {
         const visualisation = keys
             .reverse()
@@ -235,6 +239,11 @@ export default (data, titleText) => {
                     value => {
                         visualisation[key].visible = value;
                         updateYArea();
+                        if (keys.every(key => !visualisation[key].visible)) {
+                            noData.style.opacity = 1;
+                        } else {
+                            noData.style.opacity = 0;
+                        }
                     },
                     () => {
                         keys.forEach(innerKey => toggleCheckBoxes[innerKey](innerKey === key));
@@ -256,6 +265,8 @@ export default (data, titleText) => {
             tooltip.resize();
             setMapWindow(x0, x1);
             updateIntersections(-1);
+
+            noData.style.top = svgHeight / 2 + 18 + 14 + 'px';
         };
 
         mount();
