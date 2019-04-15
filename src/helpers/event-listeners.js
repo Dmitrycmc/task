@@ -8,7 +8,7 @@ export const removeListener = (element, event, listener) => {
 
 export const addDragAndDropListeners = (element, listener) => {
     const getMouseCoords = e => ({ x: e.clientX, y: e.clientY });
-    const getTouchCoords = e => ({ x: e.touches[0].clientX, y: e.touches[0].clientY });
+    const getTouchCoords = e => ({ x: e.targetTouches[0].clientX, y: e.targetTouches[0].clientY });
     const getMouseOffset = e => ({ x: e.offsetX, y: e.offsetY });
     const getTouchOffset = e => {
         const box = element.getBoundingClientRect();
@@ -44,8 +44,10 @@ export const addDragAndDropListeners = (element, listener) => {
 
     addListener(element, 'touchstart', e => {
         const offset = getTouchOffset(e);
+        const touchId = e.changedTouches[0].identifier;
 
         const onTouchMove = e => {
+            if (e.targetTouches[0].identifier !== touchId) return;
             const touchCoords = getTouchCoords(e);
             const cornerCoords = { x: touchCoords.x - offset.x, y: touchCoords.y + offset.y };
             listener(cornerCoords);
