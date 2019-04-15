@@ -16,12 +16,22 @@
     scroll-snap-align: start;
 }
 */
-
-.crt_title {
+.crt_header {
+    display: flex;
+    justify-content: space-between;
     width: 100%;
+    margin-bottom: 10px;
 
     font-weight: bold;
+
+}
+
+.crt_title {
     text-align: left;
+}
+
+.crt_bounds {
+    text-align: right;
 }
 
 .ctr_chart {

@@ -17,6 +17,7 @@ import { addDragAndDropListeners, addListener, removeListener } from '../../help
 import createMap from '../map/map';
 import Tooltip from '../tooltip/tooltip';
 import Grid from '../grid/grid';
+import { dateFormat } from '../../helpers/date-time';
 
 const typeToConstructor = {
     line: (...props) => new Line(false, ...props),
@@ -26,7 +27,7 @@ const typeToConstructor = {
 
 const MIN_WIN_WIDTH = 0.05;
 
-export default (data, title) => {
+export default (data, titleText) => {
     const chartSvg = createSvgElement('svg', {}, 'ctr_chart');
 
     const {
@@ -50,6 +51,10 @@ export default (data, title) => {
     let xMouse = null;
     let mouseXFixed = false;
     let yColumnFull = undefined;
+    const periodFormat = (x0, x1) =>
+        `${dateFormat(relToAbs(x0, xColumn[0], xColumn[xColumn.length - 1]))} - ${dateFormat(
+            relToAbs(x1, xColumn[0], xColumn[xColumn.length - 1])
+        )}`;
 
     let keyToYBound = {};
     const getYBounds = key =>
@@ -61,8 +66,13 @@ export default (data, title) => {
 
     const wrapper = createElement('crt_wrapper');
     const controls = createElement('crt_controls');
-    const header = createElement('crt_title');
-    header.textContent = title;
+    const header = createElement('crt_header');
+    const title = createElement('crt_title');
+    const bounds = createElement('crt_bounds');
+    header.appendChild(title);
+    header.appendChild(bounds);
+    title.textContent = titleText;
+    bounds.textContent = periodFormat(x0, x1);
 
     let tooltip, grid;
 
@@ -192,6 +202,7 @@ export default (data, title) => {
         const updateXBounds = (a, b) => {
             x0 = a;
             x1 = b;
+            bounds.textContent = periodFormat(x0, x1);
             setXChartArea(x0, x1);
             setMapWindow(x0, x1);
         };
