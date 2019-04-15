@@ -17,9 +17,10 @@ margin: 0;
   transition: background-color 0.2s, color 0.2s;
 
   user-select: none;
+}
 
-  /*scroll-snap-type: y mandatory;*/
-
+.desktop {
+  scroll-snap-type: y mandatory;
 }
 
 .night {
