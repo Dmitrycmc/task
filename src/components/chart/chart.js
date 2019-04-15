@@ -61,7 +61,7 @@ export default (data, title) => {
 
     const wrapper = createElement('crt_wrapper');
     const controls = createElement('crt_controls');
-    const header = createElement();
+    const header = createElement('crt_title');
     header.textContent = title;
 
     let tooltip, grid;
