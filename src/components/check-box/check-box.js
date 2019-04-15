@@ -1,6 +1,6 @@
 import './check-box.css';
 import { createElement } from '../../helpers/elements';
-import { addListener, removeListener } from '../../helpers/event-listeners';
+import { addListener } from '../../helpers/event-listeners';
 import createCheckIcon from '../icons/checkbox-icon';
 
 export default (color, text, onChange, onClear) => {
@@ -28,23 +28,24 @@ export default (color, text, onChange, onClear) => {
         mark.style.opacity = +checked;
     };
 
+    const onclick = () => toggle();
+    addListener(wrapper, 'mousedown', onclick);
+    addListener(wrapper, 'touchcancel', onclick);
+
     let timeoutId = null;
     const clear = () => {
         onClear && onClear();
-        removeListener(wrapper, 'touchend', onEndHolding);
-        removeListener(wrapper, 'mouseup', onEndHolding);
     };
     const onStartHolding = () => {
         timeoutId = setTimeout(clear, 1000);
-        addListener(wrapper, 'touchend', onEndHolding);
-        addListener(wrapper, 'mouseup', onEndHolding);
     };
     const onEndHolding = () => {
         clearTimeout(timeoutId);
-        toggle();
     };
     addListener(wrapper, 'touchstart', onStartHolding);
     addListener(wrapper, 'mousedown', onStartHolding);
+    addListener(wrapper, 'touchend', onEndHolding);
+    addListener(wrapper, 'mouseup', onEndHolding);
 
     return { node: wrapper, toggle };
 };
