@@ -1,5 +1,6 @@
 .tt_wrapper {
     transition: transform 0.2s, opacity 0.2s;
+    cursor: pointer;
 }
 
 .tt_rect {

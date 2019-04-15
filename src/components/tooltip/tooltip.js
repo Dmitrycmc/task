@@ -12,6 +12,7 @@ export default class Tooltip {
     constructor(parentNode) {
         this.transformY = createSvgElement('g', {}, 'tt_wrapper');
         this.transformX = createSvgElement('g', {}, 'tt_wrapper');
+
         this.rect = createSvgElement(
             'rect',
             { x: MARGIN, y: MARGIN, rx: 15, ry: 15, width: WIDTH, transform: 'scale(1 -1)' },
@@ -24,6 +25,7 @@ export default class Tooltip {
         });
         this.transformY.appendChild(this.transformX);
         this.transformX.appendChild(this.rect);
+        this.transformX.appendChild(createSvgElement('polyline', {transform: `translate(${WIDTH + MARGIN - PADDING - 7} -${PADDING + MARGIN + 6})`, 'stroke-width': 2, fill: 'none', stroke: 'gray', points: "0,0 5,-5 0,-10"}));
         this.transformX.appendChild(this.text);
         parentNode.appendChild(this.transformY);
     }
@@ -48,6 +50,7 @@ export default class Tooltip {
 
         const xText = createSvgElement('tspan', {}, 'tt_bold');
         xText.textContent = dateFormat(xAbs, true);
+
         this.text.appendChild(xText);
 
         data.forEach(({ y, color, name }) => {
